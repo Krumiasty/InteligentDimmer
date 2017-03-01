@@ -1,0 +1,75 @@
+﻿<Window x:Class="InteligentDimmer.View.ControlView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:InteligentDimmer.View"
+        mc:Ignorable="d"
+        Title="Control Window" Height="500" Width="700"
+        WindowStartupLocation="CenterScreen"
+        Closing="WindowClosing"
+        DataContext="{StaticResource ConnectionViewModel}">
+    <Window.Background>
+        <ImageBrush ImageSource="/Resources/Images/background.png"/>
+    </Window.Background>
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <BitmapImage x:Key="Sun" UriSource="/Resources/Images/sun.png" />
+            <Style x:Name="myButtonStyle" x:Key="buttonStyle" TargetType="Button">
+                <Setter Property="Background" Value="#4252e8"/>
+                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="FontFamily" Value="Courier"/>
+                <Setter Property="FontSize" Value="16"/>
+            </Style>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="2*"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <Image Name="SunImage" Source="{StaticResource Sun}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="50" Opacity="0"/>
+        <Slider Name="PowerSlider" Grid.Row="0" Grid.RowSpan="3" Grid.Column="0" Grid.ColumnSpan="2" 
+                Orientation="Vertical" Margin="100,220,100,70" Ticks="0, 25, 50, 75, 100"
+                TickPlacement="BottomRight" ValueChanged="PowerSliderValueChanged"
+                Maximum="100"/>
+        <Label Content="Current device: " Name="ChosenDeviceText" Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="1" 
+               Width="100" Height="30" VerticalAlignment="Top" Margin="0,20,0,0"/>
+        <Label Content="{Binding SelectedBluetooth.Name}" Name="ChosenDevice" Grid.Column="3" Grid.Row="0" Grid.ColumnSpan="1" 
+               Width="100" Height="30" VerticalAlignment="Top" Margin="0,20,0,0"/>
+        <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,40,10,0" 
+                    Orientation="Horizontal" HorizontalAlignment="Center">
+            <Button Name="IncreasePowerButton" Content="+" Style="{StaticResource buttonStyle}"
+                    Height="30" Width="30"
+                    Click="IncreasePowerClick"/>
+            <Label Name="DisplayPowerValueLabel" Content="0 %" Foreground="White"
+                    Height="30" Width="40" BorderBrush="#4252e8" BorderThickness="1"></Label>
+            <Button Name="DecresePowerButton" Content="-" Style="{StaticResource buttonStyle}"
+                    Height="30" Width="30"
+                    Click="DecreasePowerClick"/>
+        </StackPanel>
+
+        <Button Name="MainPowerButton" Content="Turn Off/Turn On" 
+                Style="{StaticResource buttonStyle}"
+            Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" Margin="40, 63, 40, 23" Background="#FF4252E8"/>
+
+        <StackPanel Grid.Column="3" Grid.ColumnSpan="3" Grid.Row="0" VerticalAlignment="Center" Margin="0, 60, 30, 0">
+            <Frame x:Name="frame" Content="Frame" Height="100" BorderThickness="1" BorderBrush="Black"
+                   Margin="0,0,0,20"/>
+            <Button Name="SetTimeButton" Content="Set Time" Style="{StaticResource buttonStyle}"
+                    Width="80" Height="30"></Button>
+        </StackPanel>
+    </Grid>
+</Window>
