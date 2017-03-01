@@ -25,7 +25,7 @@ namespace InteligentDimmer.ViewModel
         }
         public ControlViewModel()
         {
-
+            
         }
 
         private void RaisePropertyChanged(string propertyName)
