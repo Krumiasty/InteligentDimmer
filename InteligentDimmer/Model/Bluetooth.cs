@@ -1,38 +1,34 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using InTheHand.Net.Sockets;
 
 namespace InteligentDimmer.Model
 {
     public class Bluetooth
     {
-        int id;
-        string name;
+        public string Name { get; set; }
+        public bool Authenticated { get; set; }
+        public bool Connected { get; set; }
+        public ushort Nap { get; set; }
+        public uint Sap { get; set; }
+        public DateTime LastSeen { get; set; }
+        public DateTime LastUsed { get; set; }
+        public bool Remembered { get; set; }
 
-        public int Id
+        public Bluetooth(BluetoothDeviceInfo deviceInfo)
         {
-            get
-            {
-                return this.id;
-            }
-            set
-            {
-                this.id = value;
-            }
+            this.Authenticated = deviceInfo.Authenticated;
+            this.Connected = deviceInfo.Connected;
+            this.Name = deviceInfo.DeviceName;
+            this.LastSeen = deviceInfo.LastSeen;
+            this.LastUsed = deviceInfo.LastUsed;
+            this.Nap = deviceInfo.DeviceAddress.Nap;
+            this.Sap = deviceInfo.DeviceAddress.Sap;
+            this.Remembered = deviceInfo.Remembered;
         }
-        public string Name
-        {
-            get
-            {
-                return this.name;
-            }
 
-            set
-            {
-                this.name = value;
-            }
+        public override string ToString()
+        {
+            return this.Name;
         }
     }
 }

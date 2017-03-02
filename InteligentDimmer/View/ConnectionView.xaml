@@ -46,19 +46,18 @@
                 MaxHeight="40" MaxWidth="200" Command="{Binding ConnectWithDeviceCommand}"
                 />
         <StackPanel Grid.Column="1" HorizontalAlignment="Left" Height="100" Margin="72,44,0,0" VerticalAlignment="Top" Width="100"/>
-        <Grid x:Name="DeviceList" Margin="10" Grid.Row="0" Grid.Column="1">
-
+        <Grid x:Name="DeviceList" Margin="30, 30, 30, 70" Grid.Row="0" Grid.Column="1">
             <ListView ItemsSource="{Binding Bluetooths}" SelectedItem="{Binding SelectedBluetooth}" >
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <WrapPanel>
-                            <TextBlock Text="{Binding Id, StringFormat=No. {0}}" FontFamily="Courier"/>
-                            <TextBlock Text=" - "/>
                             <TextBlock Text="{Binding Name}" FontFamily="Courier"/>
                         </WrapPanel>
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
         </Grid>
+        <Button Content="Refresh" Grid.Row="0" Grid.Column="1" Width="40" Height="40"
+                VerticalAlignment="Bottom" Margin="0,0,0, 20"/>
     </Grid>
 </Window>

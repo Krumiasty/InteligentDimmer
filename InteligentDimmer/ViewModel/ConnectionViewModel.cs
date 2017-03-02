@@ -2,15 +2,17 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
+using System.Security.Cryptography.X509Certificates;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using InteligentDimmer.Extensions;
 using InteligentDimmer.Model;
 using InteligentDimmer.Utility;
 using InteligentDimmer.View;
 using InteligentDimmer.ViewModel.Interfaces;
+using InTheHand.Net.Sockets;
 
 namespace InteligentDimmer.ViewModel
 {
@@ -47,37 +49,61 @@ namespace InteligentDimmer.ViewModel
 
         public ConnectionViewModel()
         {
-            LoadBluetoothMock();
+      //      LoadBluetoothMock();
             LoadCommands();
+            FindBluetooths();
         }
 
-        private void LoadBluetoothMock()
+        private async void FindBluetooths()
         {
-            Bluetooths = new ObservableCollection<Bluetooth>()
-            {
-                new Bluetooth()
-                {
-                    Id = 0,
-                    Name = "device1"
-                },
-                new Bluetooth()
-                {
-                    Id = 1,
-                    Name = "testdevice"
-                },
-                new Bluetooth()
-                {
-                    Id = 2,
-                    Name = "myBluetooth"
-                },
-                 new Bluetooth()
-                {
-                    Id = 3,
-                    Name = "ttttttt"
-                }
-            };
+            List<Bluetooth> devices = new List<Bluetooth>();
+            BluetoothClient bc = new BluetoothClient();
+            
+            // flag to show animation
 
+            await Task.Run(() =>
+            {
+                BluetoothDeviceInfo[] array = bc.DiscoverDevices();
+                int count = array.Length;
+                for (int i = 0; i < count; i++)
+                {
+                    Bluetooth device = new Bluetooth(array[i]);
+                    devices.Add(device);
+                }
+
+                Bluetooths = devices.ToObservableCollection();
+            });
+           
+            // stop animation
         }
+
+        //private void LoadBluetoothMock()
+        //{
+        //    Bluetooths = new ObservableCollection<Bluetooth>()
+        //    {
+        //        new Bluetooth()
+        //        {
+        //            Id = 0,
+        //            Name = "device1"
+        //        },
+        //        new Bluetooth()
+        //        {
+        //            Id = 1,
+        //            Name = "testdevice"
+        //        },
+        //        new Bluetooth()
+        //        {
+        //            Id = 2,
+        //            Name = "myBluetooth"
+        //        },
+        //         new Bluetooth()
+        //        {
+        //            Id = 3,
+        //            Name = "ttttttt"
+        //        }
+        //    };
+
+        //}
 
         private void LoadCommands()
         {
@@ -106,4 +132,6 @@ namespace InteligentDimmer.ViewModel
             }
         }
     }
+    
+
 }
