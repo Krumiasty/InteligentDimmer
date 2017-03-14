@@ -61,6 +61,9 @@
     </ApplicationDefinition>
     <Compile Include="Extensions\ListExtensions.cs" />
     <Compile Include="Model\Bluetooth.cs" />
+    <Compile Include="MyDialog.xaml.cs">
+      <DependentUpon>MyDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Resources\Styles\buttonStyle.xaml.cs">
       <DependentUpon>buttonStyle.xaml</DependentUpon>
     </Compile>
@@ -70,6 +73,10 @@
     <Compile Include="View\ControlView.xaml.cs">
       <DependentUpon>ControlView.xaml</DependentUpon>
     </Compile>
+    <Page Include="MyDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Resources\Styles\buttonStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

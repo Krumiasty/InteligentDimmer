@@ -51,13 +51,13 @@
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <WrapPanel>
-                            <TextBlock Text="{Binding Name}" FontFamily="Courier"/>
+                            <TextBlock Text="{Binding DeviceName}" FontFamily="Courier"/>
                         </WrapPanel>
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
         </Grid>
-        <Button Content="Refresh" Grid.Row="0" Grid.Column="1" Width="40" Height="40"
-                VerticalAlignment="Bottom" Margin="0,0,0, 20"/>
+        <Button Name="RefreshButton" Content="Refresh" Grid.Row="0" Grid.Column="1" Width="40" Height="40"
+                VerticalAlignment="Bottom" Margin="0,0,0, 20" Command="{Binding RefreshCommand}"/>
     </Grid>
 </Window>
