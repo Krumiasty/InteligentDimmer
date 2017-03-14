@@ -4,17 +4,17 @@
 winexe
 C#
 .cs
-C:\Users\Krum\Documents\Visual Studio 2015\Projects\InteligentDimmer\InteligentDimmer\obj\Debug\
+C:\Users\Krum\documents\visual studio 2015\Projects\InteligentDimmer\InteligentDimmer\obj\Debug\
 InteligentDimmer
 none
 false
 DEBUG;TRACE
-C:\Users\Krum\Documents\Visual Studio 2015\Projects\InteligentDimmer\InteligentDimmer\App.xaml
-3-18826867
+C:\Users\Krum\documents\visual studio 2015\Projects\InteligentDimmer\InteligentDimmer\App.xaml
+4-462783023
 
-17-440206147
-141543662035
-Resources\Styles\buttonStyle.xaml;View\ConnectionView.xaml;View\ControlView.xaml;
+18-1252681197
+141545725939
+MyDialog.xaml;Resources\Styles\buttonStyle.xaml;View\ConnectionView.xaml;View\ControlView.xaml;
 
-False
+True
 

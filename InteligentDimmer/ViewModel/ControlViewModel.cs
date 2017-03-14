@@ -23,6 +23,8 @@ namespace InteligentDimmer.ViewModel
             
         }
 
+
+
         private void RaisePropertyChanged(string propertyName)
         {
             if (PropertyChanged != null)

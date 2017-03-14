@@ -20,3 +20,5 @@ C:\Users\Krum\Documents\Visual Studio 2015\Projects\InteligentDimmer\InteligentD
 C:\Users\Krum\Documents\Visual Studio 2015\Projects\InteligentDimmer\InteligentDimmer\obj\Debug\App.baml
 C:\Users\Krum\Documents\Visual Studio 2015\Projects\InteligentDimmer\InteligentDimmer\bin\Debug\InTheHand.Net.Personal.dll
 C:\Users\Krum\Documents\Visual Studio 2015\Projects\InteligentDimmer\InteligentDimmer\bin\Debug\InTheHand.Net.Personal.xml
+C:\Users\Krum\Documents\Visual Studio 2015\Projects\InteligentDimmer\InteligentDimmer\obj\Debug\MyDialog.g.cs
+C:\Users\Krum\Documents\Visual Studio 2015\Projects\InteligentDimmer\InteligentDimmer\obj\Debug\MyDialog.baml
