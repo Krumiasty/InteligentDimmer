@@ -6,5 +6,6 @@
              StartupUri="View/ConnectionView.xaml">
     <Application.Resources>
         <vm:ConnectionViewModel x:Key="ConnectionViewModel"/>
+        <vm:ControlViewModel x:Key="ControlViewModel"/>
     </Application.Resources>
 </Application>
