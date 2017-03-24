@@ -15,9 +15,7 @@
     <Window.Background>
         <ImageBrush ImageSource="/Resources/Images/background.png"/>
     </Window.Background>
-    
 
-      
     <Window.Resources>
         <ResourceDictionary>
             <Style x:Name="myButtonStyle" x:Key="buttonStyle" TargetType="Button">
