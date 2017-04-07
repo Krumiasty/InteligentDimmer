@@ -1,59 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO.Ports;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Input;
 using InteligentDimmer.Extensions;
 using InteligentDimmer.Model;
 using InteligentDimmer.Utility;
 using InteligentDimmer.View;
-using InteligentDimmer.ViewModel.Interfaces;
 using InTheHand.Net;
 using InTheHand.Net.Bluetooth;
 using InTheHand.Net.Sockets;
 
 namespace InteligentDimmer.ViewModel
 {
-    public class ConnectionViewModel : IConnectionViewModel, INotifyPropertyChanged
+    public class ConnectionViewModel : ViewModelsWrapper, INotifyPropertyChanged
     {
-        private Bluetooth _selectedBluetooth;
-
-        private ObservableCollection<Bluetooth> _bluetooths;
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private SerialPort _serialPort;
-
-        public SerialPort SerialPort => _serialPort;
-
-        public ICommand ConnectWithDeviceCommand { get; set; }
-        public ICommand RefreshCommand { get; set; }
-        public ObservableCollection<Bluetooth> Bluetooths
-        {
-            get { return _bluetooths; }
-            set
-            {
-                _bluetooths = value;
-                RaisePropertyChanged("Bluetooths");
-            }
-        }
-
-        public Bluetooth SelectedBluetooth
-        {
-            get { return _selectedBluetooth; }
-            set
-            {
-                _selectedBluetooth = value;
-                RaisePropertyChanged("SelectedBluetooth");
-            }
-        }     
-
-        public ConnectionViewModel()
+       public ConnectionViewModel()
         {
             LoadCommands();
             FindBluetooths();
@@ -89,7 +53,7 @@ namespace InteligentDimmer.ViewModel
             List<Bluetooth> devices = new List<Bluetooth>();
             BluetoothClient bluetoothClientc = new BluetoothClient();
             
-            // flag to show animation
+            // TODO flag to show animation
 
             await Task.Run(() =>
             {
@@ -105,7 +69,7 @@ namespace InteligentDimmer.ViewModel
                 Bluetooths = devices.ToObservableCollection();
             });
            
-            // stop animation
+            // TODO stop animation
         }
 
         private void LoadCommands()
@@ -131,12 +95,9 @@ namespace InteligentDimmer.ViewModel
             var macAddressString = SelectedBluetooth.GetMacAddress();
             var macAddress = BluetoothAddress.Parse(macAddressString);
             var device = new BluetoothDeviceInfo(macAddress);
-
-     ///      var localEndpoint = new BluetoothEndPoint( macAddress, BluetoothService.SerialPort);
-     //       var bluetoothClient = new BluetoothClient(localEndpoint);
             var bluetoothClient = new BluetoothClient();
 
-            string pin = "1111";
+            const string pin = "1111";
             var isPaired = BluetoothSecurity.PairRequest(macAddress, pin);
 
             if (!isPaired)
@@ -150,8 +111,8 @@ namespace InteligentDimmer.ViewModel
                 MessageBox.Show("Authentication failed");
                 SerialPort.Close();
                 return;
-                
             }
+
             foreach (var service in device.InstalledServices)
             {
                 try
@@ -168,15 +129,14 @@ namespace InteligentDimmer.ViewModel
             if (!bluetoothClient.Connected)
             {
                 MessageBox.Show("Connection failed");
-                return;
-                bluetoothClient.GetStream();
-            }
+                return;                
+            }       
 
-
-
+            var stream = bluetoothClient.GetStream();
+            stream.Write(new byte[] { 0, 0, 0}, 0, 0);
             _serialPort.DataReceived += OnDataReceived;
 
-            ControlViewModel controlViewModel = new ControlViewModel(SerialPort);
+            //     ControlViewModel controlViewModel = new ControlViewModel(SerialPort);
             ControlView controlWindow = new ControlView();
             Application.Current.MainWindow.Close();
             controlWindow.Show();
@@ -203,16 +163,6 @@ namespace InteligentDimmer.ViewModel
                if (SelectedBluetooth != null)
                    return true;
                return false;
-        }
-
-        private void RaisePropertyChanged(string propertyName)
-        {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
-        }
-    }
-    
-
+        }  
+    } 
 }

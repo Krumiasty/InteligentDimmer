@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
+using InteligentDimmer.ViewModel;
 
 namespace InteligentDimmer
 {
@@ -13,5 +8,12 @@ namespace InteligentDimmer
     /// </summary>
     public partial class App : Application
     {
+        public App()
+        {
+            Singleton.Instance.connectionViewModel = new ConnectionViewModel();
+            Singleton.Instance.controlViewModel = new ControlViewModel();
+        }
     }
+
+  
 }
