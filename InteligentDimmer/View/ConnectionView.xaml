@@ -11,7 +11,8 @@
         WindowStartupLocation="CenterScreen"
         xmlns:system="clr-namespace:System;assembly=mscorlib"
         xmlns:viewmodels="clr-namespace:InteligentDimmer.ViewModel"
-        DataContext="{StaticResource ConnectionViewModel}">
+        DataContext="{StaticResource ConnectionViewModel}"
+        Icon="../Resources/sun.ico">
     <Window.Background>
         <ImageBrush ImageSource="/Resources/Images/background.png"/>
     </Window.Background>
@@ -43,19 +44,33 @@
                 Content="Connect with Device" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2"
                 MaxHeight="40" MaxWidth="200" Command="{Binding ConnectWithDeviceCommand}"
                 />
-        <StackPanel Grid.Column="1" HorizontalAlignment="Left" Height="100" Margin="72,44,0,0" VerticalAlignment="Top" Width="100"/>
+        
         <Grid x:Name="DeviceList" Margin="30, 30, 30, 70" Grid.Row="0" Grid.Column="1">
-            <ListView ItemsSource="{Binding Bluetooths}" SelectedItem="{Binding SelectedBluetooth}" >
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <WrapPanel>
-                            <TextBlock Text="{Binding DeviceName}" FontFamily="Courier"/>
-                        </WrapPanel>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
+            <Grid x:Name="LoadingIndicatorPanel" Opacity="0">
+                <Label Background="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                    <ProgressBar UseLayoutRounding="True" IsEnabled="True" Width="100"/>
+                </Label>
+            </Grid>
+            <Grid x:Name="BluetoothListGrid" Opacity="1">
+                <ListView ItemsSource="{Binding Bluetooths}" SelectedItem="{Binding SelectedBluetooth}" >
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <WrapPanel>
+                                <TextBlock Text="{Binding DeviceName}" FontFamily="Courier"/>
+                            </WrapPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Grid>
         </Grid>
-        <Button Name="RefreshButton" Content="Refresh" Grid.Row="0" Grid.Column="1" Width="40" Height="40"
-                VerticalAlignment="Bottom" Margin="0,0,0, 20" Command="{Binding RefreshCommand}"/>
+        <Button Name="RefreshButton" Grid.Row="0" Grid.Column="1" Width="40" Height="40"
+                Style="{StaticResource buttonStyle}"
+                VerticalAlignment="Bottom" Margin="0,0,0, 20" Command="{Binding RefreshCommand}">
+       
+                <StackPanel>
+                    <Image MaxWidth="40" MaxHeight="40" Source="/Resources/Images/refresh.jpg" />   
+                </StackPanel>
+
+        </Button>
     </Grid>
 </Window>

@@ -8,6 +8,6 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("buttonstyle.xaml")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("sun.ico")]
 
 

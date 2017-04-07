@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO.Ports;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,6 +15,6 @@ namespace InteligentDimmer.ViewModel.Interfaces
         ICommand ConnectWithDeviceCommand { get; set; }
         ObservableCollection<Bluetooth> Bluetooths { get; set; }
         Bluetooth SelectedBluetooth { get; set; }
-
+        SerialPort SerialPort { get; }
     }
 }
