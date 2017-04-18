@@ -1,23 +1,67 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO.Ports;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
 using InteligentDimmer.Extensions;
 using InteligentDimmer.Model;
 using InteligentDimmer.Utility;
 using InteligentDimmer.View;
+using InteligentDimmer.ViewModel.Interfaces;
 using InTheHand.Net;
 using InTheHand.Net.Bluetooth;
 using InTheHand.Net.Sockets;
 
 namespace InteligentDimmer.ViewModel
 {
-    public class ConnectionViewModel : ViewModelsWrapper, INotifyPropertyChanged
+    public class ConnectionViewModel : IConnectionViewModel, INotifyPropertyChanged
     {
-       public ConnectionViewModel()
+        private SerialPort _serialPort;
+        private ObservableCollection<Bluetooth> _bluetooths;
+        private Bluetooth _selectedBluetooth;
+        private Visibility _progressBar;
+        public ICommand ConnectWithDeviceCommand { get; set; }
+        public ICommand LoadingIndicatorCommand { get; set; }
+        public ICommand RefreshCommand { get; set; }
+
+        public Visibility ProgressBar
+        {
+            get { return _progressBar; }
+            set
+            {
+                _progressBar = value;
+                RaisePropertyChanged("ProgressBar");
+            }
+        }
+
+        public ObservableCollection<Bluetooth> Bluetooths
+        {
+            get { return _bluetooths; }
+            set
+            {
+                _bluetooths = value;
+                RaisePropertyChanged("Bluetooths");
+            }
+        }
+        public Bluetooth SelectedBluetooth
+        {
+            get { return _selectedBluetooth; }
+            set
+            {
+                _selectedBluetooth = value;
+                RaisePropertyChanged("SelectedBluetooth");
+            }
+        }
+
+        public SerialPort SerialPort { get; }
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public ConnectionViewModel()
         {
             LoadCommands();
             FindBluetooths();
@@ -52,10 +96,12 @@ namespace InteligentDimmer.ViewModel
         {
             List<Bluetooth> devices = new List<Bluetooth>();
             BluetoothClient bluetoothClientc = new BluetoothClient();
-            
-            // TODO flag to show animation
 
-            await Task.Run(() =>
+            // TODO flag to show animation
+            //   CanShowLoadingIndicator(true);
+            LoadingIndicator(Visibility.Visible);
+
+               await Task.Run(() =>
             {
                 var foundDevices = bluetoothClientc.DiscoverDevices();
                 int count = foundDevices.Length;
@@ -68,14 +114,36 @@ namespace InteligentDimmer.ViewModel
 
                 Bluetooths = devices.ToObservableCollection();
             });
-           
+
+            if (Bluetooths.Count == 0)
+            {
+                BluetoothDeviceInfo empytDevice = new BluetoothDeviceInfo( new BluetoothAddress(0));
+                var item = new Bluetooth(empytDevice);
+                item.DeviceName = "No devices found";
+                Bluetooths.Add( item);
+            }
             // TODO stop animation
+            //  CanShowLoadingIndicator(false);
+            LoadingIndicator(Visibility.Hidden);
         }
 
         private void LoadCommands()
         {
             ConnectWithDeviceCommand = new CustomCommand(ConnectWithDevice, CanConnect);
             RefreshCommand = new CustomCommand(Refresh, CanRefresh);
+            LoadingIndicatorCommand = new CustomCommand(LoadingIndicator, CanShowLoadingIndicator);
+        }
+
+        private bool CanShowLoadingIndicator(object obj)
+        {
+            return true;
+        }
+
+        private void LoadingIndicator(object obj)
+        {
+            // obj as visiblity
+            _progressBar = _progressBar == Visibility.Visible ? Visibility.Hidden : Visibility.Visible;
+            RaisePropertyChanged("Visibility");
         }
 
         private void Refresh(object obj)
@@ -163,6 +231,15 @@ namespace InteligentDimmer.ViewModel
                if (SelectedBluetooth != null)
                    return true;
                return false;
-        }  
+        }
+
+        protected void RaisePropertyChanged(string propertyName)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+
     } 
 }

@@ -10,10 +10,6 @@ namespace InteligentDimmer
     {
         public App()
         {
-            Singleton.Instance.connectionViewModel = new ConnectionViewModel();
-            Singleton.Instance.controlViewModel = new ControlViewModel();
         }
     }
-
-  
 }

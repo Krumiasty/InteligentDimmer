@@ -81,6 +81,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Extensions\ListExtensions.cs" />
+    <Compile Include="Infrastructure\ObjectContainer.cs" />
     <Compile Include="Model\Bluetooth.cs" />
     <Compile Include="MyDialog.xaml.cs">
       <DependentUpon>MyDialog.xaml</DependentUpon>
@@ -91,6 +92,7 @@
     <Compile Include="ViewModel\ConnectionViewModel.cs" />
     <Compile Include="ViewModel\ControlViewModel.cs" />
     <Compile Include="ViewModel\Interfaces\IConnectionViewModel.cs" />
+    <Compile Include="ViewModel\ViewModelLocator.cs" />
     <Compile Include="ViewModel\ViewModelsWrapper.cs" />
     <Compile Include="View\ControlView.xaml.cs">
       <DependentUpon>ControlView.xaml</DependentUpon>

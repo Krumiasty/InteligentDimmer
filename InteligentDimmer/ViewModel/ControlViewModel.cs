@@ -8,7 +8,7 @@ using InteligentDimmer.Utility;
 
 namespace InteligentDimmer.ViewModel
 {
-    public class ControlViewModel: ViewModelsWrapper, INotifyPropertyChanged
+    public class ControlViewModel: INotifyPropertyChanged
     {
         private Bluetooth _selectedBluetooth;
         public ICommand WindowCloseCommand { get; set; }
