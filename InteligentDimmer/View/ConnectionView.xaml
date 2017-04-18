@@ -59,7 +59,7 @@
                 </ListView>
             </Grid>
             <ProgressBar Name="LoadingIndicator" UseLayoutRounding="True" IsEnabled="True" 
-                         Width="50" Height="50" Visibility="{Binding LoadingIndicatorCommand}"/>
+                         Width="50" Height="50" Visibility="{Binding ProgressBar}"/>
         </Grid>
         <Button Name="RefreshButton" Grid.Row="0" Grid.Column="1" Width="40" Height="40"
                 Style="{StaticResource buttonStyle}"

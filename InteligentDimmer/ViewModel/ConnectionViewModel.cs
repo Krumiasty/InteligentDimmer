@@ -26,7 +26,6 @@ namespace InteligentDimmer.ViewModel
         private Bluetooth _selectedBluetooth;
         private Visibility _progressBar;
         public ICommand ConnectWithDeviceCommand { get; set; }
-        public ICommand LoadingIndicatorCommand { get; set; }
         public ICommand RefreshCommand { get; set; }
 
         public Visibility ProgressBar
@@ -97,9 +96,7 @@ namespace InteligentDimmer.ViewModel
             List<Bluetooth> devices = new List<Bluetooth>();
             BluetoothClient bluetoothClientc = new BluetoothClient();
 
-            // TODO flag to show animation
-            //   CanShowLoadingIndicator(true);
-            LoadingIndicator(Visibility.Visible);
+            ProgressBar = Visibility.Visible;
 
                await Task.Run(() =>
             {
@@ -122,29 +119,15 @@ namespace InteligentDimmer.ViewModel
                 item.DeviceName = "No devices found";
                 Bluetooths.Add( item);
             }
-            // TODO stop animation
-            //  CanShowLoadingIndicator(false);
-            LoadingIndicator(Visibility.Hidden);
+
+            ProgressBar = Visibility.Hidden;
         }
 
         private void LoadCommands()
         {
             ConnectWithDeviceCommand = new CustomCommand(ConnectWithDevice, CanConnect);
             RefreshCommand = new CustomCommand(Refresh, CanRefresh);
-            LoadingIndicatorCommand = new CustomCommand(LoadingIndicator, CanShowLoadingIndicator);
-        }
-
-        private bool CanShowLoadingIndicator(object obj)
-        {
-            return true;
-        }
-
-        private void LoadingIndicator(object obj)
-        {
-            // obj as visiblity
-            _progressBar = _progressBar == Visibility.Visible ? Visibility.Hidden : Visibility.Visible;
-            RaisePropertyChanged("Visibility");
-        }
+        } 
 
         private void Refresh(object obj)
         {
