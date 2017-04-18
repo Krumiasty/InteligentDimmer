@@ -20,6 +20,11 @@
 *.sdf
 *.pyc
 *.xml
+*.pdb
+*.g.resources
+*.baml
+*.g.cs
+*.g.i.cs
 ipch/
 obj/
 [Bb]in
