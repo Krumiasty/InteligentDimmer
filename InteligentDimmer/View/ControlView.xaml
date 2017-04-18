@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="Control Window" Height="500" Width="700"
         WindowStartupLocation="CenterScreen"      
-        DataContext="{StaticResource ConnectionViewModel}"
+        DataContext="{Binding ConnectionViewModel ,Source={StaticResource ViewModelLocator}}"
         Icon="../Resources/sun.ico">
 
     <Window.Background>

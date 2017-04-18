@@ -11,7 +11,7 @@
         WindowStartupLocation="CenterScreen"
         xmlns:system="clr-namespace:System;assembly=mscorlib"
         xmlns:viewmodels="clr-namespace:InteligentDimmer.ViewModel"
-        DataContext="{StaticResource ConnectionViewModel}"
+        DataContext="{Binding ConnectionViewModel ,Source={StaticResource ViewModelLocator}}"
         Icon="../Resources/sun.ico">
     <Window.Background>
         <ImageBrush ImageSource="/Resources/Images/background.png"/>
@@ -39,18 +39,14 @@
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <Image Source="/Resources/Images/sun.png" Grid.Row="0" Grid.Column="0" MaxHeight="100"></Image>
+        <Image Source="/Resources/Images/sun.png" Grid.Row="0" Grid.Column="0" MaxHeight="100"/>
         <Button Name="ConnectWithDeviceButton" Style="{StaticResource buttonStyle}"
                 Content="Connect with Device" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2"
-                MaxHeight="40" MaxWidth="200" Command="{Binding ConnectWithDeviceCommand}"
-                />
+                MaxHeight="40" MaxWidth="200" Command="{Binding ConnectWithDeviceCommand}" />
         
         <Grid x:Name="DeviceList" Margin="30, 30, 30, 70" Grid.Row="0" Grid.Column="1">
-            <Grid x:Name="LoadingIndicatorPanel" Opacity="0">
-                <Label Background="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
-                    <ProgressBar UseLayoutRounding="True" IsEnabled="True" Width="100"/>
-                </Label>
-            </Grid>
+
+
             <Grid x:Name="BluetoothListGrid" Opacity="1">
                 <ListView ItemsSource="{Binding Bluetooths}" SelectedItem="{Binding SelectedBluetooth}" >
                     <ListView.ItemTemplate>
@@ -62,6 +58,8 @@
                     </ListView.ItemTemplate>
                 </ListView>
             </Grid>
+            <ProgressBar Name="LoadingIndicator" UseLayoutRounding="True" IsEnabled="True" 
+                         Width="50" Height="50" Visibility="{Binding LoadingIndicatorCommand}"/>
         </Grid>
         <Button Name="RefreshButton" Grid.Row="0" Grid.Column="1" Width="40" Height="40"
                 Style="{StaticResource buttonStyle}"
