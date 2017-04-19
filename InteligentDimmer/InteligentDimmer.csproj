@@ -80,6 +80,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Controls\ProgressWait.xaml.cs">
+      <DependentUpon>ProgressWait.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Extensions\ListExtensions.cs" />
     <Compile Include="Infrastructure\ObjectContainer.cs" />
     <Compile Include="Model\Bluetooth.cs" />
@@ -97,6 +100,10 @@
     <Compile Include="View\ControlView.xaml.cs">
       <DependentUpon>ControlView.xaml</DependentUpon>
     </Compile>
+    <Page Include="Controls\ProgressWait.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="MyDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

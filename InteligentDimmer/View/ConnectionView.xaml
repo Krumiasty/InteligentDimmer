@@ -58,12 +58,13 @@
                     </ListView.ItemTemplate>
                 </ListView>
             </Grid>
-            <ProgressBar Name="LoadingIndicator" UseLayoutRounding="True" IsEnabled="True" 
-                         Width="50" Height="50" Visibility="{Binding ProgressBar}"/>
+            <ProgressBar x:Name="LoadingIndicator" UseLayoutRounding="True" IsEnabled="True" 
+                         Width="100" Height="20" Visibility="{Binding ProgressBar}"
+                         Minimum="0" Maximum="100" IsIndeterminate="True"/>
         </Grid>
         <Button Name="RefreshButton" Grid.Row="0" Grid.Column="1" Width="40" Height="40"
                 Style="{StaticResource buttonStyle}"
-                VerticalAlignment="Bottom" Margin="0,0,0, 20" Command="{Binding RefreshCommand}">
+                VerticalAlignment="Bottom" Margin="0,0,0,20" Command="{Binding RefreshCommand}">
        
                 <StackPanel>
                     <Image MaxWidth="40" MaxHeight="40" Source="/Resources/Images/refresh.jpg" />   
