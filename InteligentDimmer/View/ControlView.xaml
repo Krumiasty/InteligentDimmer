@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="Control Window" Height="500" Width="700"
         WindowStartupLocation="CenterScreen"      
-        DataContext="{Binding ConnectionViewModel ,Source={StaticResource ViewModelLocator}}"
+        DataContext="{Binding ControlViewModel ,Source={StaticResource ViewModelLocator}}"
         Icon="../Resources/sun.ico">
 
     <Window.Background>
@@ -45,7 +45,7 @@
                Margin="50" Opacity="0"/>
         <Slider Name="PowerSlider" Grid.Row="0" Grid.RowSpan="3" Grid.Column="0" Grid.ColumnSpan="2" 
                 Orientation="Vertical" Margin="100,220,100,70" Ticks="0, 25, 50, 75, 100"
-                TickPlacement="BottomRight" ValueChanged="PowerSliderValueChanged"
+                TickPlacement="BottomRight" Value="{Binding SliderValue}"
                 Maximum="100"/>
         <Label Content="Current device: " Name="ChosenDeviceText" Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="1" 
                Width="100" Height="30" VerticalAlignment="Top" Margin="0,20,0,0"/>
@@ -64,11 +64,15 @@
         </StackPanel>
 
         <Button Name="MainPowerButton" Content="Turn On" 
-                Style="{StaticResource buttonStyle}"
-            Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" Margin="60, 63, 60, 23" Background="#FF4252E8"/>
+                Style="{StaticResource buttonStyle}" Command="{Binding PowerDeviceCommand}"
+                Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" Margin="60, 63, 60, 23" Background="#FF4252E8"/>
 
+        <Label Content="{Binding CurrentTime}" Grid.Column="5" Grid.Row="2" Margin="0,0,5,5"
+               VerticalAlignment="Bottom" HorizontalAlignment="Right"/>
+        
         <StackPanel Grid.Column="3" Grid.ColumnSpan="3" Grid.Row="0" VerticalAlignment="Center" Margin="0, 60, 30, 0">
 
+            
             <Grid Height="100" Margin="0,0,0,20" >
                 <Border BorderBrush="Black" BorderThickness="1">
                     <Grid Background="White" Opacity="0.5">

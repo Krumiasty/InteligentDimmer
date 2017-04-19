@@ -25,6 +25,9 @@ namespace InteligentDimmer.ViewModel
         private ObservableCollection<Bluetooth> _bluetooths;
         private Bluetooth _selectedBluetooth;
         private Visibility _progressBar;
+
+        public bool IsConnected { get; set; }
+
         public ICommand ConnectWithDeviceCommand { get; set; }
         public ICommand RefreshCommand { get; set; }
 
@@ -141,53 +144,64 @@ namespace InteligentDimmer.ViewModel
 
         private void ConnectWithDevice(object obj)
         {
-            SetupSerialPort();
 
-            var macAddressString = SelectedBluetooth.GetMacAddress();
-            var macAddress = BluetoothAddress.Parse(macAddressString);
-            var device = new BluetoothDeviceInfo(macAddress);
-            var bluetoothClient = new BluetoothClient();
+            #region testing
 
-            const string pin = "1111";
-            var isPaired = BluetoothSecurity.PairRequest(macAddress, pin);
 
-            if (!isPaired)
-            {
-                MessageBox.Show("Pairing failed");
-                return;
-            }        
 
-            if (!device.Authenticated)
-            {
-                MessageBox.Show("Authentication failed");
-                SerialPort.Close();
-                return;
-            }
 
-            foreach (var service in device.InstalledServices)
-            {
-                try
-                {
-                    bluetoothClient.Connect(macAddress, service);
-                    break;
-                }
-                catch
-                {
-                    
-                }
-            }
+            //SetupSerialPort();
 
-            if (!bluetoothClient.Connected)
-            {
-                MessageBox.Show("Connection failed");
-                return;                
-            }       
+            //var macAddressString = SelectedBluetooth.GetMacAddress();
+            //var macAddress = BluetoothAddress.Parse(macAddressString);
+            //var device = new BluetoothDeviceInfo(macAddress);
+            //var bluetoothClient = new BluetoothClient();
 
-            var stream = bluetoothClient.GetStream();
-            stream.Write(new byte[] { 0, 0, 0}, 0, 0);
-            _serialPort.DataReceived += OnDataReceived;
+            //const string pin = "1111";
+            //var isPaired = BluetoothSecurity.PairRequest(macAddress, pin);
 
-            //     ControlViewModel controlViewModel = new ControlViewModel(SerialPort);
+            //if (!isPaired)
+            //{
+            //    MessageBox.Show("Pairing failed");
+            //    return;
+            //}        
+
+            //if (!device.Authenticated)
+            //{
+            //    MessageBox.Show("Authentication failed");
+            //    SerialPort.Close();
+            //    return;
+            //}
+
+            //foreach (var service in device.InstalledServices)
+            //{
+            //    try
+            //    {
+            //        bluetoothClient.Connect(macAddress, service);
+            //        break;
+            //    }
+            //    catch
+            //    {
+
+            //    }
+            //}
+
+            //if (!bluetoothClient.Connected)
+            //{
+            //    MessageBox.Show("Connection failed");
+            //    return;                
+            //}       
+
+            // IsConnected = true;
+            //var stream = bluetoothClient.GetStream();
+            //stream.Write(new byte[] { 0, 0, 0}, 0, 0);
+            //_serialPort.DataReceived += OnDataReceived;
+
+            ////     ControlViewModel controlViewModel = new ControlViewModel(SerialPort);
+
+            #endregion
+
+            IsConnected = true;
             ControlView controlWindow = new ControlView();
             Application.Current.MainWindow.Close();
             controlWindow.Show();
