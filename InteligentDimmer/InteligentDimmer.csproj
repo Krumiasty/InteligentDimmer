@@ -93,7 +93,6 @@
     <Compile Include="ViewModel\ControlViewModel.cs" />
     <Compile Include="ViewModel\Interfaces\IConnectionViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
-    <Compile Include="ViewModel\ViewModelsWrapper.cs" />
     <Compile Include="View\ControlView.xaml.cs">
       <DependentUpon>ControlView.xaml</DependentUpon>
     </Compile>
