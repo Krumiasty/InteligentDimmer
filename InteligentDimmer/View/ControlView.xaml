@@ -9,7 +9,7 @@
         WindowStartupLocation="CenterScreen"      
         DataContext="{Binding ControlViewModel ,Source={StaticResource ViewModelLocator}}"
         Icon="../Resources/sun.ico">
-
+    
     <Window.Background>
         <ImageBrush ImageSource="/Resources/Images/background.png"/>
     </Window.Background>
@@ -42,7 +42,7 @@
         </Grid.RowDefinitions>
 
         <Image Name="SunImage" Source="{StaticResource Sun}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
-               Margin="50" Opacity="0"/>
+               Margin="50" Opacity="{Binding SliderValue, Converter={StaticResource SliderValueToSunOpacityConverter}}"/>
         <Slider Name="PowerSlider" Grid.Row="0" Grid.RowSpan="3" Grid.Column="0" Grid.ColumnSpan="2" 
                 Orientation="Vertical" Margin="100,220,100,70" Ticks="0, 25, 50, 75, 100"
                 TickPlacement="BottomRight" Value="{Binding SliderValue}"
@@ -54,16 +54,14 @@
         <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,40,10,0" 
                     Orientation="Horizontal" HorizontalAlignment="Center">
             <Button Name="IncreasePowerButton" Content="+" Style="{StaticResource buttonStyle}"
-                    Height="30" Width="30"
-                    Click="IncreasePowerClick"/>
-            <Label Name="DisplayPowerValueLabel" Content="0 %" Foreground="White"
-                    Height="30" Width="50" BorderBrush="#4252e8" BorderThickness="1"></Label>
+                    Height="30" Width="30" Command="{Binding IncreaseCommand}" />
+            <Label Name="DisplayPowerValueLabel" Content="{Binding SliderValue, Converter={StaticResource AddPercetSignToTheValue}}"
+                   Foreground="White" Height="30" Width="50" BorderBrush="#4252e8" BorderThickness="1"/>
             <Button Name="DecresePowerButton" Content="-" Style="{StaticResource buttonStyle}"
-                    Height="30" Width="30"
-                    Click="DecreasePowerClick"/>
+                    Height="30" Width="30" Command="{Binding DecreaseCommand}"/>
         </StackPanel>
 
-        <Button Name="MainPowerButton" Content="Turn On" 
+        <Button Name="MainPowerButton" Content="{Binding TurnModeText}" 
                 Style="{StaticResource buttonStyle}" Command="{Binding PowerDeviceCommand}"
                 Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" Margin="60, 63, 60, 23" Background="#FF4252E8"/>
 
