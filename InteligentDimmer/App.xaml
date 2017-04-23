@@ -3,8 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:InteligentDimmer.View"
              xmlns:vm="clr-namespace:InteligentDimmer.ViewModel"
+             xmlns:converters="clr-namespace:InteligentDimmer.Converters"
              StartupUri="View/ConnectionView.xaml">
     <Application.Resources>
         <vm:ViewModelLocator x:Key="ViewModelLocator"/>
+        <converters:AddPercetSignToTheValueConverter x:Key="AddPercetSignToTheValue"/>
+        <converters:SliderValueToSunOpacityConverter x:Key="SliderValueToSunOpacityConverter"/>
     </Application.Resources>
 </Application>

@@ -80,6 +80,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Converters\AddPercetSignToTheValueConverter.cs" />
+    <Compile Include="Converters\SliderValueToSunOpacityConverter.cs" />
     <Compile Include="Extensions\ListExtensions.cs" />
     <Compile Include="Infrastructure\ObjectContainer.cs" />
     <Compile Include="Model\Bluetooth.cs" />
@@ -92,6 +94,7 @@
     <Compile Include="ViewModel\ConnectionViewModel.cs" />
     <Compile Include="ViewModel\ControlViewModel.cs" />
     <Compile Include="ViewModel\Interfaces\IConnectionViewModel.cs" />
+    <Compile Include="Model\PowerMode.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
     <Compile Include="View\ControlView.xaml.cs">
       <DependentUpon>ControlView.xaml</DependentUpon>
@@ -177,6 +180,7 @@
     <Resource Include="Resources\Images\refresh.jpg" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Constants\" />
     <Folder Include="Controls\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
