@@ -80,6 +80,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Controls\RoundTextBox.xaml.cs">
+      <DependentUpon>RoundTextBox.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Converters\DefaultBackgroundConverter.cs" />
+    <Compile Include="Utility\Constants.cs" />
     <Compile Include="Converters\AddPercetSignToTheValueConverter.cs" />
     <Compile Include="Converters\SliderValueToSunOpacityConverter.cs" />
     <Compile Include="Extensions\ListExtensions.cs" />
@@ -91,14 +96,20 @@
     <Compile Include="Resources\Styles\buttonStyle.xaml.cs">
       <DependentUpon>buttonStyle.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Validators\HoursValidator.cs" />
+    <Compile Include="Validators\MinutesValidator.cs" />
+    <Compile Include="Validators\SetPowerValidator.cs" />
     <Compile Include="ViewModel\ConnectionViewModel.cs" />
     <Compile Include="ViewModel\ControlViewModel.cs" />
-    <Compile Include="ViewModel\Interfaces\IConnectionViewModel.cs" />
     <Compile Include="Model\PowerMode.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
     <Compile Include="View\ControlView.xaml.cs">
       <DependentUpon>ControlView.xaml</DependentUpon>
     </Compile>
+    <Page Include="Controls\RoundTextBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MyDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -179,10 +190,7 @@
   <ItemGroup>
     <Resource Include="Resources\Images\refresh.jpg" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Constants\" />
-    <Folder Include="Controls\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

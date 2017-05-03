@@ -6,20 +6,18 @@ using System.IO.Ports;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using InteligentDimmer.Extensions;
 using InteligentDimmer.Model;
 using InteligentDimmer.Utility;
 using InteligentDimmer.View;
-using InteligentDimmer.ViewModel.Interfaces;
 using InTheHand.Net;
 using InTheHand.Net.Bluetooth;
 using InTheHand.Net.Sockets;
 
 namespace InteligentDimmer.ViewModel
 {
-    public class ConnectionViewModel : IConnectionViewModel, INotifyPropertyChanged
+    public class ConnectionViewModel : INotifyPropertyChanged
     {
         private SerialPort _serialPort;
         private ObservableCollection<Bluetooth> _bluetooths;

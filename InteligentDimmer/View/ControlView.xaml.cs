@@ -1,5 +1,5 @@
 ﻿using System.Windows;
-using System.Windows.Input;
+using InteligentDimmer.ViewModel;
 
 namespace InteligentDimmer.View
 {
@@ -8,17 +8,11 @@ namespace InteligentDimmer.View
     /// </summary>
     public partial class ControlView : Window
     {
-        int sliderValue = 0;
         public ControlView()
         {
             InitializeComponent();
-            
+            var ff = this.DataContext as ControlViewModel;        
         }
-
-        //protected void CloseClick(object sender, RoutedEventArgs e)
-        //{
-        //    this.Close();
-        //}
 
         private void WindowClosing(object sender, System.ComponentModel.CancelEventArgs e)
         {
@@ -26,30 +20,5 @@ namespace InteligentDimmer.View
             Application.Current.Shutdown();
         }
 
-        private void PowerSliderValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            this.sliderValue = (int)e.NewValue;
-            //  this.SliderValueLabel.Content = this.sliderValue.ToString() + " %";
-            SunImage.Opacity = (double)this.sliderValue / 100;
-
-            DisplayPowerValueLabel.Content = this.sliderValue.ToString() + " %";
-        }
-
-        private void IncreasePowerClick(object sender, RoutedEventArgs e)
-        {
-            if(this.sliderValue <= 100)
-            {
-                this.sliderValue++;
-            }
-
-        }
-
-        private void DecreasePowerClick(object sender, RoutedEventArgs e)
-        {
-            if(this.sliderValue >= 0)
-            {
-                this.sliderValue--;
-            }
-        }
     }
 }
