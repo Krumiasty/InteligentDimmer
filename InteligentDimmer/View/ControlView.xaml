@@ -4,6 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:InteligentDimmer.View"
+        xmlns:controls="clr-namespace:InteligentDimmer.Controls"
+        xmlns:validators="clr-namespace:InteligentDimmer.Validators"
         mc:Ignorable="d"
         Title="Control Window" Height="500" Width="700"
         WindowStartupLocation="CenterScreen"      
@@ -23,22 +25,57 @@
                 <Setter Property="FontFamily" Value="Courier"/>
                 <Setter Property="FontSize" Value="16"/>
             </Style>
+            <Style x:Name="myValidatorStyle" x:Key="ValidatorStyle" 
+                   BasedOn="{StaticResource buttonStyle}" TargetType="Button">
+                <Setter Property="IsEnabled" Value="False"/>
+                <Style.Triggers>
+                    <MultiDataTrigger>
+                        <MultiDataTrigger.Conditions>
+                            <Condition Binding="{Binding Path=(Validation.HasError), ElementName=FromHours}" Value="False"/>
+                            <Condition Binding="{Binding Path=(Validation.HasError), ElementName=FromMinutes}" Value="False"/>
+                            <Condition Binding="{Binding Path=(Validation.HasError), ElementName=ToHours}" Value="False"/>
+                            <Condition Binding="{Binding Path=(Validation.HasError), ElementName=ToMinutes}" Value="False"/>
+                        </MultiDataTrigger.Conditions>
+                        <Setter Property="IsEnabled" Value="True"/>
+                    </MultiDataTrigger>
+                </Style.Triggers>
+            </Style>
+            <Style x:Name="myTextBoxStyle" x:Key="TextBoxStyle" TargetType="TextBox">
+                <Setter Property="FontSize" Value="18"/>
+                <Setter Property="Width" Value="32"/>
+                <Setter Property="MaxLength" Value="2"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="TextAlignment" Value="Center"/>
+                <Style.Triggers>
+                    <Trigger Property="Validation.HasError" Value="True">
+                        <Setter Property="ToolTip" Value="{Binding RelativeSource=
+                            {RelativeSource Self}, Path=(Validation.Errors)[0].ErrorContent}"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+            
+            <Style x:Name="myBorderStyle" x:Key="BorderStyle" TargetType="Border">
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="BorderBrush" Value="Black"/>
+                <Setter Property="CornerRadius" Value="5"/>
+                <Setter Property="Padding" Value="1"/>
+            </Style>
         </ResourceDictionary>
     </Window.Resources>
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"></ColumnDefinition>
-            <ColumnDefinition Width="*"></ColumnDefinition>
-            <ColumnDefinition Width="*"></ColumnDefinition>
-            <ColumnDefinition Width="*"></ColumnDefinition>
-            <ColumnDefinition Width="*"></ColumnDefinition>
-            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="2*"></RowDefinition>
-            <RowDefinition Height="*"></RowDefinition>
-            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="2*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
         <Image Name="SunImage" Source="{StaticResource Sun}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
@@ -66,22 +103,106 @@
                 Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" Margin="60, 63, 60, 23" Background="#FF4252E8"/>
 
         <Label Content="{Binding CurrentTime}" Grid.Column="5" Grid.Row="2" Margin="0,0,5,5"
-               VerticalAlignment="Bottom" HorizontalAlignment="Right"/>
-        
-        <StackPanel Grid.Column="3" Grid.ColumnSpan="3" Grid.Row="0" VerticalAlignment="Center" Margin="0, 60, 30, 0">
+               VerticalAlignment="Bottom" HorizontalAlignment="Right" FontSize="16"/>
 
-            
+        <StackPanel Grid.Column="3" Grid.ColumnSpan="3" Grid.Row="0" VerticalAlignment="Center"
+                    Margin="0, 60, 30, 0">
+
             <Grid Height="100" Margin="0,0,0,20" >
-                <Border BorderBrush="Black" BorderThickness="1">
-                    <Grid Background="White" Opacity="0.5">
+                <Border BorderBrush="Black" BorderThickness="1" CornerRadius="5">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <StackPanel Background="White" Opacity="0.5" Grid.RowSpan="2" Grid.ColumnSpan="2" 
+                                    Orientation="Horizontal" >
+                 
+                        </StackPanel>
+                        <StackPanel Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Grid.ColumnSpan="2" Orientation="Horizontal" 
+                                    Margin="0,0,0,30" HorizontalAlignment="Center" VerticalAlignment="Center" >
+                            
+                            <Label Content="From" FontSize="18"/>
+                            <Border Style="{StaticResource BorderStyle}">
+                                <TextBox x:Name="FromHours" Style="{StaticResource TextBoxStyle}" 
+                                         Background="{Binding ValidationColor, Converter={StaticResource DefaultBackgroundConverter}}">
+                                    <TextBox.Text>
+                                        <Binding Path="FromHours" Mode="TwoWay">
+                                            <Binding.ValidationRules>
+                                                <validators:HoursValidator/>
+                                            </Binding.ValidationRules>
+                                        </Binding>
+                                    </TextBox.Text>
+                                </TextBox>
+                            </Border>
+                            <Label Content=":" FontSize="18"/>
+                            <Border Style="{StaticResource BorderStyle}">
+                                <TextBox x:Name="FromMinutes" Style="{StaticResource TextBoxStyle}"
+                                          Background="{Binding ValidationColor, Converter={StaticResource DefaultBackgroundConverter}}">
+                                    <TextBox.Text>
+                                        <Binding Path="FromMinutes" Mode="TwoWay" >
+                                            <Binding.ValidationRules>
+                                                <validators:MinutesValidator/>
+                                            </Binding.ValidationRules>
+                                        </Binding>
+                                    </TextBox.Text>
+                                </TextBox>
+                            </Border>
+                            <Label Content="To" FontSize="18"/>
+                            <Border Style="{StaticResource BorderStyle}">
+                                <TextBox x:Name="ToHours" Style="{StaticResource TextBoxStyle}">
+                                    <TextBox.Text>
+                                        <Binding Path="ToHours" >
+                                            <Binding.ValidationRules>
+                                                <validators:HoursValidator/>
+                                            </Binding.ValidationRules>
+                                        </Binding>
+                                    </TextBox.Text>
+                                </TextBox>
+                            </Border>
+                         
+                            <Label Content=":" FontSize="18"/>
+                            <Border Style="{StaticResource BorderStyle}">
+                                <TextBox x:Name="ToMinutes" Style="{StaticResource TextBoxStyle}">
+                                    <TextBox.Text>
+                                        <Binding Path="ToMinutes" >
+                                            <Binding.ValidationRules>
+                                                <validators:MinutesValidator/>
+                                            </Binding.ValidationRules>
+                                        </Binding>
+                                    </TextBox.Text>
+                                </TextBox>
+                            </Border>
+                        </StackPanel>
+                        <StackPanel Grid.Row="1" Margin="0,12,0,0" HorizontalAlignment="Center">
+                            <Button Content="Now" Margin="70,0,0,0" Width="50"
+                                    Style="{StaticResource buttonStyle}" Command="{Binding GetCurrentTime}"/>
+                        </StackPanel>
+                        <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" 
+                                    HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <Label Content="Power :" Margin="0,0,10,0" FontSize="16" VerticalAlignment="Center"/>
+                            <TextBox x:Name="PowerSetter" Width="60" 
+                                     FontSize="16" TextAlignment="Center" MaxLength="3">
+                                <TextBox.Text>
+                                    <Binding Path="SetPower" Converter="{StaticResource AddPercetSignToTheValue}" >
+                                        <Binding.ValidationRules>
+                                            <validators:SetPowerValidator/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                        </StackPanel>
 
                     </Grid>
                 </Border>
             </Grid>
-          
-            <Button Name="SetTimeButton" Content="Set Time" Style="{StaticResource buttonStyle}"
-                    Width="80" Height="30"></Button>
-            
+
+            <Button Name="SetTimeButton" Content="Set Time" Style="{StaticResource ValidatorStyle}"
+                    Width="80" Height="30" Command="{Binding SetTimeCommand}" />
 
         </StackPanel>
     </Grid>

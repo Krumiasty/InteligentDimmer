@@ -4,10 +4,16 @@
              xmlns:local="clr-namespace:InteligentDimmer.View"
              xmlns:vm="clr-namespace:InteligentDimmer.ViewModel"
              xmlns:converters="clr-namespace:InteligentDimmer.Converters"
+             xmlns:controls="clr-namespace:InteligentDimmer.Controls"
+             xmlns:validators="clr-namespace:InteligentDimmer.Validators"
              StartupUri="View/ConnectionView.xaml">
     <Application.Resources>
         <vm:ViewModelLocator x:Key="ViewModelLocator"/>
         <converters:AddPercetSignToTheValueConverter x:Key="AddPercetSignToTheValue"/>
         <converters:SliderValueToSunOpacityConverter x:Key="SliderValueToSunOpacityConverter"/>
+        <converters:DefaultBackgroundConverter x:Key="DefaultBackgroundConverter"/>
+        <controls:RoundTextBox x:Key="RoundTextBox"/>
+        <validators:HoursValidator x:Key="HoursValidator"/>
+        <validators:MinutesValidator x:Key="MinutesValidator"/>
     </Application.Resources>
 </Application>
