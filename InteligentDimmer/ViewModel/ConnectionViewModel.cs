@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Input;
 using InteligentDimmer.Extensions;
 using InteligentDimmer.Model;
+using InteligentDimmer.Services;
 using InteligentDimmer.Utility;
 using InteligentDimmer.View;
 using InTheHand.Net;
@@ -24,6 +25,8 @@ namespace InteligentDimmer.ViewModel
         private Bluetooth _selectedBluetooth;
         private Visibility _progressBar;
 
+        public BluetoothClient BluetoothClient { get; set; }
+        public string Response { get; set; }
         public bool IsConnected { get; set; }
 
         public ICommand ConnectWithDeviceCommand { get; set; }
@@ -94,15 +97,14 @@ namespace InteligentDimmer.ViewModel
 
         private async void FindBluetooths()
         {
-            List<Bluetooth> devices = new List<Bluetooth>();
-            BluetoothClient bluetoothClientc = new BluetoothClient();
+            var devices = new List<Bluetooth>();
+            var bluetoothClientc = new BluetoothClient();
 
             ProgressBar = Visibility.Visible;
-
+            SelectedBluetooth = null;
                await Task.Run(() =>
             {
                 var foundDevices = bluetoothClientc.DiscoverDevices();
-                int count = foundDevices.Length;
 
                 foreach (var foundDevice in foundDevices)
                 {
@@ -115,7 +117,7 @@ namespace InteligentDimmer.ViewModel
 
             if (Bluetooths.Count == 0)
             {
-                BluetoothDeviceInfo empytDevice = new BluetoothDeviceInfo( new BluetoothAddress(0));
+                BluetoothDeviceInfo empytDevice = new BluetoothDeviceInfo(new BluetoothAddress(0));
                 var item = new Bluetooth(empytDevice);
                 item.DeviceName = "No devices found";
                 Bluetooths.Add(item);
@@ -150,7 +152,7 @@ namespace InteligentDimmer.ViewModel
             //var macAddressString = SelectedBluetooth.GetMacAddress();
             //var macAddress = BluetoothAddress.Parse(macAddressString);
             //var device = new BluetoothDeviceInfo(macAddress);
-            //var bluetoothClient = new BluetoothClient();
+            //BluetoothClient = new BluetoothClient();
 
             //const string pin = "1111";
             //var isPaired = BluetoothSecurity.PairRequest(macAddress, pin);
@@ -159,7 +161,7 @@ namespace InteligentDimmer.ViewModel
             //{
             //    MessageBox.Show("Pairing failed");
             //    return;
-            //}        
+            //}
 
             //if (!device.Authenticated)
             //{
@@ -172,7 +174,7 @@ namespace InteligentDimmer.ViewModel
             //{
             //    try
             //    {
-            //        bluetoothClient.Connect(macAddress, service);
+            //        BluetoothClient.Connect(macAddress, service);
             //        break;
             //    }
             //    catch
@@ -181,19 +183,32 @@ namespace InteligentDimmer.ViewModel
             //    }
             //}
 
-            //if (!bluetoothClient.Connected)
+            //if (!BluetoothClient.Connected)
             //{
             //    MessageBox.Show("Connection failed");
-            //    return;                
-            //}       
+            //    return;
+            //}
 
-            // IsConnected = true;
-            //var stream = bluetoothClient.GetStream();
-            //stream.Write(new byte[] { 0, 0, 0}, 0, 0);
+            //PrepareDataService.PrepareData(0xAA, 0xBB, 0xCC, 0xDD, 0xEE);
+            //var stream = BluetoothClient.GetStream();
+
+            //stream.Write(new byte[]
+            //{
+            //    ControlData.FifthByte,
+            //    ControlData.SecondByte,
+            //    ControlData.ThirdByte,
+            //    ControlData.FourthByte,
+            //    ControlData.FifthByte
+            //}, 0, 0);
+
             //_serialPort.DataReceived += OnDataReceived;
 
-            ////     ControlViewModel controlViewModel = new ControlViewModel(SerialPort);
+            //if (!Response.Contains(""))
+            //{
+            //    IsConnected = false;
+            //    return;
 
+            //}
             #endregion
 
             IsConnected = true;
@@ -216,6 +231,7 @@ namespace InteligentDimmer.ViewModel
             {
                 Debug.WriteLine(receivedString);
             }
+            Response = receivedString;
         }
 
         private bool CanConnect(object obj)

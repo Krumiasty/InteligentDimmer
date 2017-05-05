@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Controls;
 
 namespace InteligentDimmer.Validators
@@ -12,18 +8,13 @@ namespace InteligentDimmer.Validators
     {
         public override ValidationResult Validate(object value, CultureInfo cultureInfo)
         {
-            // TODO still accepts 123
             var tmpstr = value as string;
+            if (string.IsNullOrEmpty(tmpstr))
+            {
+                return new ValidationResult(false, "This field cannot be empty!");
+            }
             var lastChar = tmpstr.Last();
-            string strwithoutpercent;
-            if (lastChar == '%')
-            {
-                strwithoutpercent = tmpstr.Remove(tmpstr.Length - 1);
-            }
-            else
-            {
-                strwithoutpercent = tmpstr;
-            }
+            var strwithoutpercent = lastChar == '%' ? tmpstr.Remove(tmpstr.Length - 1) : tmpstr;
             int powerValue;
             if (!int.TryParse(strwithoutpercent, out powerValue))
             {

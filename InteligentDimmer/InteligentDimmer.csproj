@@ -84,6 +84,8 @@
       <DependentUpon>RoundTextBox.xaml</DependentUpon>
     </Compile>
     <Compile Include="Converters\DefaultBackgroundConverter.cs" />
+    <Compile Include="Model\ControlData.cs" />
+    <Compile Include="Services\PrepareDataService.cs" />
     <Compile Include="Utility\Constants.cs" />
     <Compile Include="Converters\AddPercetSignToTheValueConverter.cs" />
     <Compile Include="Converters\SliderValueToSunOpacityConverter.cs" />
