@@ -118,7 +118,7 @@ namespace InteligentDimmer.ViewModel
                 BluetoothDeviceInfo empytDevice = new BluetoothDeviceInfo( new BluetoothAddress(0));
                 var item = new Bluetooth(empytDevice);
                 item.DeviceName = "No devices found";
-                Bluetooths.Add( item);
+                Bluetooths.Add(item);
             }
 
             ProgressBar = Visibility.Hidden;
@@ -144,9 +144,6 @@ namespace InteligentDimmer.ViewModel
         {
 
             #region testing
-
-
-
 
             //SetupSerialPort();
 
@@ -223,7 +220,7 @@ namespace InteligentDimmer.ViewModel
 
         private bool CanConnect(object obj)
         {
-               if (SelectedBluetooth != null)
+               if (SelectedBluetooth != null && SelectedBluetooth.DeviceName != "No devices found")
                    return true;
                return false;
         }

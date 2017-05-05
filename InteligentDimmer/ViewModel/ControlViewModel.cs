@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO.Ports;
+using System.Linq;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
@@ -30,18 +31,41 @@ namespace InteligentDimmer.ViewModel
             }
             set
             {
-                _setPower = value;
-                int powerValueFromSetter;
-                if (!int.TryParse(value, out powerValueFromSetter))
+                string tmpstr = value;
+                var lastChar = tmpstr.Last();
+              
+                if (lastChar == '%')
                 {
-                    ValidationColor = new SolidColorBrush(Colors.Red);
-                    throw new ApplicationException("Wrong minutes number");
+                    while (tmpstr.Last() == '%')
+                    {
+                        tmpstr = tmpstr.Remove(tmpstr.Length - 1);
+                    }
+
+                    _setPower = tmpstr;
                 }
                 else
                 {
-                    RaisePropertyChanged(nameof(SetPower));
-                    SliderValue = int.Parse(_setPower);
-                    ValidationColor = new SolidColorBrush(Colors.White);
+                    tmpstr = value;
+                }
+                int powerValueFromSetter;
+                if (!int.TryParse(tmpstr, out powerValueFromSetter))
+                {
+                    ValidationColor = new SolidColorBrush(Colors.Red);
+                    throw new ApplicationException("Wrong power number");
+                }
+                else
+                {
+                    if (powerValueFromSetter >= 0 && powerValueFromSetter <= 100)
+                    {
+                        RaisePropertyChanged(nameof(SetPower));
+                     //   SliderValue = int.Parse(_setPower);
+                        ValidationColor = new SolidColorBrush(Colors.White);
+                    }
+                    else
+                    {
+                        throw new ApplicationException("Wrong power number");
+                    }
+                  
                 }
             }
         }

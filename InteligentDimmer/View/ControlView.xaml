@@ -19,14 +19,14 @@
     <Window.Resources>
         <ResourceDictionary>
             <BitmapImage x:Key="Sun" UriSource="/Resources/Images/sun.png" />
-            <Style x:Name="myButtonStyle" x:Key="buttonStyle" TargetType="Button">
+            <Style x:Name="myButtonStyle" x:Key="ButtonStyle" TargetType="Button">
                 <Setter Property="Background" Value="#4252e8"/>
                 <Setter Property="Foreground" Value="White"/>
                 <Setter Property="FontFamily" Value="Courier"/>
                 <Setter Property="FontSize" Value="16"/>
             </Style>
             <Style x:Name="myValidatorStyle" x:Key="ValidatorStyle" 
-                   BasedOn="{StaticResource buttonStyle}" TargetType="Button">
+                   BasedOn="{StaticResource ButtonStyle}" TargetType="Button">
                 <Setter Property="IsEnabled" Value="False"/>
                 <Style.Triggers>
                     <MultiDataTrigger>
@@ -35,6 +35,7 @@
                             <Condition Binding="{Binding Path=(Validation.HasError), ElementName=FromMinutes}" Value="False"/>
                             <Condition Binding="{Binding Path=(Validation.HasError), ElementName=ToHours}" Value="False"/>
                             <Condition Binding="{Binding Path=(Validation.HasError), ElementName=ToMinutes}" Value="False"/>
+                            <Condition Binding="{Binding Path=(Validation.HasError), ElementName=PowerSetter}" Value="False"/>
                         </MultiDataTrigger.Conditions>
                         <Setter Property="IsEnabled" Value="True"/>
                     </MultiDataTrigger>
@@ -90,16 +91,16 @@
                Grid.ColumnSpan="1" Width="100" Height="30" VerticalAlignment="Top" Margin="0,20,0,0"/>
         <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,40,10,0" 
                     Orientation="Horizontal" HorizontalAlignment="Center">
-            <Button Name="IncreasePowerButton" Content="+" Style="{StaticResource buttonStyle}"
+            <Button Name="IncreasePowerButton" Content="+" Style="{StaticResource ButtonStyle}"
                     Height="30" Width="30" Command="{Binding IncreaseCommand}" />
             <Label Name="DisplayPowerValueLabel" Content="{Binding SliderValue, Converter={StaticResource AddPercetSignToTheValue}}"
-                   Foreground="White" Height="30" Width="50" BorderBrush="#4252e8" BorderThickness="1"/>
-            <Button Name="DecresePowerButton" Content="-" Style="{StaticResource buttonStyle}"
+                   Foreground="White" Height="30" Width="50" BorderBrush="#4252e8" BorderThickness="1" HorizontalContentAlignment="Center"/>
+            <Button Name="DecresePowerButton" Content="-" Style="{StaticResource ButtonStyle}"
                     Height="30" Width="30" Command="{Binding DecreaseCommand}"/>
         </StackPanel>
 
         <Button Name="MainPowerButton" Content="{Binding TurnModeText}" 
-                Style="{StaticResource buttonStyle}" Command="{Binding PowerDeviceCommand}"
+                Style="{StaticResource ButtonStyle}" Command="{Binding PowerDeviceCommand}"
                 Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" Margin="60, 63, 60, 23" Background="#FF4252E8"/>
 
         <Label Content="{Binding CurrentTime}" Grid.Column="5" Grid.Row="2" Margin="0,0,5,5"
@@ -180,13 +181,14 @@
                         </StackPanel>
                         <StackPanel Grid.Row="1" Margin="0,12,0,0" HorizontalAlignment="Center">
                             <Button Content="Now" Margin="70,0,0,0" Width="50"
-                                    Style="{StaticResource buttonStyle}" Command="{Binding GetCurrentTime}"/>
+                                    Style="{StaticResource ButtonStyle}" Command="{Binding GetCurrentTime}"/>
                         </StackPanel>
                         <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" 
                                     HorizontalAlignment="Center" VerticalAlignment="Center">
                             <Label Content="Power :" Margin="0,0,10,0" FontSize="16" VerticalAlignment="Center"/>
+                            <Border Style="{StaticResource BorderStyle}">
                             <TextBox x:Name="PowerSetter" Width="60" 
-                                     FontSize="16" TextAlignment="Center" MaxLength="3">
+                                     FontSize="16" TextAlignment="Center" MaxLength="4">
                                 <TextBox.Text>
                                     <Binding Path="SetPower" Converter="{StaticResource AddPercetSignToTheValue}" >
                                         <Binding.ValidationRules>
@@ -195,6 +197,7 @@
                                     </Binding>
                                 </TextBox.Text>
                             </TextBox>
+                            </Border>
                         </StackPanel>
 
                     </Grid>
