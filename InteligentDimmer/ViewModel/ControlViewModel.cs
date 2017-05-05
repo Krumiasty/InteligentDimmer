@@ -2,83 +2,70 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO.Ports;
+using System.Linq;
+using System.Net.Sockets;
+using System.Text;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using InteligentDimmer.Model;
 using InteligentDimmer.Utility;
+using InTheHand.Net.Sockets;
 
 namespace InteligentDimmer.ViewModel
 {
     public class ControlViewModel : INotifyPropertyChanged
     {
-        public ICommand GetCurrentTime => new CustomCommand(o =>
+        private int _powerToSet;
+        public int PowerToSet
         {
-            FromHours = DateTime.Now.Hour.ToString();
-            FromMinutes = DateTime.Now.Minute.ToString();
-        }, o => true);
-
-        private string _setPower;
-
-        public string SetPower
-        {
-            get
-            {
-                return _setPower ?? 100.ToString();
-            }
+            get { return _powerToSet; }
             set
             {
-                _setPower = value;
-                int powerValueFromSetter;
-                if (!int.TryParse(value, out powerValueFromSetter))
-                {
-                    ValidationColor = new SolidColorBrush(Colors.Red);
-                    throw new ApplicationException("Wrong minutes number");
-                }
-                else
-                {
-                    RaisePropertyChanged(nameof(SetPower));
-                    SliderValue = int.Parse(_setPower);
-                    ValidationColor = new SolidColorBrush(Colors.White);
-                }
+                _powerToSet = value;
+                ControlData.ThirdByte = (byte)_powerToSet;
+                PrepareData();
+                SendData();
             }
         }
 
-        private Brush _validationColor;
+        // TODO change data to frame format
+        public int HourFromToSet { get; set; }
+        public int MinuteFromToSet { get; set; }
+        public int HourToToSet { get; set; }
+        public int MinuteToToSet { get; set; }
+        //
 
-        public Brush ValidationColor
+        public ConnectionViewModel ConnectionViewModel { get; private set; }
+        public bool IsConnected { get; }
+      
+
+        public SerialPort SerialPort { get; }
+        public BluetoothClient BluetoothClient { get; }
+
+        private PowerMode _currentPowerStatus;
+        public PowerMode CurrentPowerStatus
         {
+            get { return _currentPowerStatus; }
             set
             {
-                _validationColor = value;
-                RaisePropertyChanged(nameof(ValidationColor));
+                _currentPowerStatus = value;
+                TurnModeText = _currentPowerStatus == PowerMode.On ? Constants.TurnOff : Constants.TurnOn;
+                RaisePropertyChanged(nameof(CurrentPowerStatus));
             }
-            get { return _validationColor; }
         }
 
-        public bool IsFromMinutesValid;
-
-        private string _fromMinutes;
-
-        public string FromMinutes
+        private string _currentTime;
+        public string CurrentTime
         {
-            get { return _fromMinutes; }
+            get { return _currentTime; }
             set
             {
-                _fromMinutes = value;
-                int fromMinutesInt;
-                if (!int.TryParse(value, out fromMinutesInt))
-                {
-                    ValidationColor = new SolidColorBrush(Colors.Red);
-                    throw new ApplicationException("Wrong minutes number");
-                }
-                else
-                {
-                    RaisePropertyChanged(nameof(FromMinutes));
-                    ValidationColor = new SolidColorBrush(Colors.White);
-                }
+                _currentTime = value;
+                RaisePropertyChanged(nameof(CurrentTime));
             }
         }
 
@@ -103,68 +90,28 @@ namespace InteligentDimmer.ViewModel
             }
         }
 
-        private string _toHours;
-
-        public string ToHours
+        private string _fromMinutes;
+        public string FromMinutes
         {
-            get { return _toHours; }
+            get { return _fromMinutes; }
             set
             {
-                _toHours = value;
-            }
-        }
-
-        private string _toMinutes;
-
-        public string ToMinutes
-        {
-            get { return _toMinutes; }
-            set
-            {
-                _toMinutes = value;
-            }
-        }
-
-        public ICommand IncreaseCommand => 
-            new CustomCommand(o =>
-            {
-                SliderValue++;
-            }, o => true);
-            
-        public ICommand DecreaseCommand =>
-            new CustomCommand(o =>
-            {
-                SliderValue--;
-            }, o => true);
-
-        private string _turnModeText;
-
-        public string TurnModeText
-        {
-            get { return _turnModeText; }
-            set
-            {
-                _turnModeText = value;
-                RaisePropertyChanged(nameof(TurnModeText));
-            }
-        }
-
-        public bool IsConnected { get; }
-
-        private string _currentTime;
-
-        public string CurrentTime
-        {
-            get { return _currentTime; }
-            set
-            {
-                _currentTime = value;
-                RaisePropertyChanged(nameof(CurrentTime));
+                _fromMinutes = value;
+                int fromMinutesInt;
+                if (!int.TryParse(value, out fromMinutesInt))
+                {
+                    ValidationColor = new SolidColorBrush(Colors.Red);
+                    throw new ApplicationException("Wrong minutes number");
+                }
+                else
+                {
+                    RaisePropertyChanged(nameof(FromMinutes));
+                    ValidationColor = new SolidColorBrush(Colors.White);
+                }
             }
         }
 
         private Bluetooth _selectedBluetooth;
-
         public Bluetooth SelectedBluetooth
         {
             get { return _selectedBluetooth; }
@@ -175,8 +122,74 @@ namespace InteligentDimmer.ViewModel
             }
         }
 
-        private int _sliderValue;
+        private Action<object> SetCurrentTime()
+        {
+            return o =>
+            {
+                FromHours = DateTime.Now.Hour.ToString();
+                FromMinutes = DateTime.Now.Minute.ToString();
+            };
+        }
 
+        private string _response;
+        public string Response
+        {
+            get { return _response; }
+            set
+            {
+                _response = value;
+                MessageBox.Show("Success!");
+            }
+        }
+
+        private string _setPower;
+        public string SetPower
+        {
+            get
+            {
+                return _setPower ?? 100.ToString();
+            }
+            set
+            {
+                string tmpstr = value;
+                var lastChar = tmpstr.Last();
+
+                if (lastChar == '%')
+                {
+                    while (tmpstr.Last() == '%')
+                    {
+                        tmpstr = tmpstr.Remove(tmpstr.Length - 1);
+                    }
+
+                    _setPower = tmpstr;
+                }
+                else
+                {
+                    tmpstr = value;
+                }
+                int powerValueFromSetter;
+                if (!int.TryParse(tmpstr, out powerValueFromSetter))
+                {
+                    ValidationColor = new SolidColorBrush(Colors.Red);
+                    throw new ApplicationException("Wrong power number");
+                }
+                else
+                {
+                    if (powerValueFromSetter >= 0 && powerValueFromSetter <= 100)
+                    {
+                        RaisePropertyChanged(nameof(SetPower));
+                        ValidationColor = new SolidColorBrush(Colors.White);
+                        PowerToSet = powerValueFromSetter;
+                    }
+                    else
+                    {
+                        throw new ApplicationException("Wrong power number");
+                    }
+                }
+            }
+        }
+
+        private int _sliderValue;
         public int SliderValue
         {
             get { return _sliderValue; }
@@ -196,31 +209,76 @@ namespace InteligentDimmer.ViewModel
                     CurrentPowerStatus = value == 0 ? PowerMode.Off : PowerMode.On;
                     _sliderValue = value;
                 }
-                
+
+                PowerToSet = SliderValue;
                 RaisePropertyChanged(nameof(SliderValue));
             }
         }
 
-        private PowerMode _currentPowerStatus;
-
-        public PowerMode CurrentPowerStatus
+        private string _toHours;
+        public string ToHours
         {
-            get { return _currentPowerStatus; }
+            get { return _toHours; }
             set
             {
-                _currentPowerStatus = value;
-                TurnModeText = _currentPowerStatus == PowerMode.On ? Constants.TurnOff : Constants.TurnOn;
-                RaisePropertyChanged(nameof(CurrentPowerStatus)); }
+                _toHours = value;
+            }
         }
 
-        public SerialPort SerialPort { get; }
-        public ICommand WindowCloseCommand { get; set; }
+        private string _toMinutes;
+        public string ToMinutes
+        {
+            get { return _toMinutes; }
+            set
+            {
+                _toMinutes = value;
+            }
+        }
+
+        private string _turnModeText;
+        public string TurnModeText
+        {
+            get { return _turnModeText; }
+            set
+            {
+                _turnModeText = value;
+                RaisePropertyChanged(nameof(TurnModeText));
+            }
+        }
+
+        public ICommand IncreaseCommand =>
+            new CustomCommand(o =>
+            {
+                SliderValue++;
+            }, o => true);
+
+        public ICommand DecreaseCommand =>
+            new CustomCommand(o =>
+            {
+                SliderValue--;
+            }, o => true);
+
+        public ICommand GetCurrentTime =>
+              new CustomCommand(SetCurrentTime(), o => true);
         public ICommand PowerDeviceCommand { get; set; }
         public ICommand SetTimeCommand { get; set; }
+        public ICommand WindowCloseCommand { get; set; }
+
+        private NetworkStream _stream;
+        public NetworkStream Stream { get; private set; }
+
+        private Brush _validationColor;
+        public Brush ValidationColor
+        {
+            set
+            {
+                _validationColor = value;
+                RaisePropertyChanged(nameof(ValidationColor));
+            }
+            get { return _validationColor; }
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
-
-        public ConnectionViewModel ConnectionViewModel { get; private set; }
 
         public ControlViewModel()
         {
@@ -230,11 +288,15 @@ namespace InteligentDimmer.ViewModel
             IsConnected = ConnectionViewModel.IsConnected;
             SelectedBluetooth = ConnectionViewModel.SelectedBluetooth;
             SerialPort = ConnectionViewModel.SerialPort;
+            BluetoothClient = ConnectionViewModel.BluetoothClient;
+
+          //  Stream = BluetoothClient.GetStream();
+        //    SerialPort.DataReceived += OnDataReceived;
 
             CurrentPowerStatus = PowerMode.Off;
         }
 
-
+     
         private void StartTimer()
         {
             var dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
@@ -256,26 +318,23 @@ namespace InteligentDimmer.ViewModel
 
         private void SetTime(object obj)
         {
-            
+            // if responose == 0xAA
+            if (true)
+            {
+                MessageBox.Show("Action Success");
+            }
         }
 
         private bool CanSetTime(object obj)
         {
-            
             return DataValidator();
         }
 
 
         private bool DataValidator()
         {
-            //validate it
-            if(!string.IsNullOrEmpty(FromHours) && !string.IsNullOrEmpty(FromMinutes) 
-                && !string.IsNullOrEmpty(ToHours) && !string.IsNullOrEmpty(ToMinutes))
-            {
-                return true;
-
-            }
-            return false;
+            return !string.IsNullOrEmpty(FromHours) && !string.IsNullOrEmpty(FromMinutes) 
+                   && !string.IsNullOrEmpty(ToHours) && !string.IsNullOrEmpty(ToMinutes);
         }
 
         private void ControlPowerDevice(object obj)
@@ -289,7 +348,7 @@ namespace InteligentDimmer.ViewModel
 
         private int PowerOn()
         {
-            // send data to bluetooth if action success:
+            // if responose == 0xAA
             if (true)
             {
                 SliderValue = 100;
@@ -301,7 +360,7 @@ namespace InteligentDimmer.ViewModel
 
         public int PowerOff()
         {
-            // send data to bluetooth if action success:
+            // if responose == 0xAA
             if (true)
             {
                 SliderValue = 0;
@@ -321,6 +380,42 @@ namespace InteligentDimmer.ViewModel
             {
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
-        }     
+        }
+
+        private void PrepareData()
+        {
+            //TODO
+            ControlData.ThirdByte = (byte)PowerToSet;
+            ControlData.FourthByte = 0;
+        }
+
+        private void SendData()
+        {
+            //Stream.Write(new byte[]
+            //{
+            //    ControlData.FirstByte,
+            //    ControlData.SecondByte,
+            //    ControlData.ThirdByte,
+            //    ControlData.FourthByte,
+            //    ControlData.FifthByte
+            //}, 0, 0);
+        }
+
+        private void OnDataReceived(object sender, SerialDataReceivedEventArgs e)
+        {
+            SerialPort serialPort = sender as SerialPort;
+            if (serialPort == null)
+            {
+                return;
+            }
+            StringBuilder sb = new StringBuilder();
+            sb.Append(serialPort.ReadExisting());
+            var receivedString = sb.ToString();
+            if (!string.IsNullOrEmpty(receivedString))
+            {
+                Debug.WriteLine(receivedString);
+            }
+            Response = receivedString;
+        }
     }
 }
