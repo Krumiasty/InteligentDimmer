@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:InteligentDimmer.View"
         xmlns:styles="clr-namespace:InteligentDimmer.Resources.Styles"
         mc:Ignorable="d"
-        Width="500" Height="400" ResizeMode="NoResize"
+        Width="500" Height="440" ResizeMode="NoResize"
         Title="Inteligent Dimmer"
         WindowStartupLocation="CenterScreen"
         xmlns:system="clr-namespace:System;assembly=mscorlib"
@@ -19,7 +19,13 @@
 
     <Window.Resources>
         <ResourceDictionary>
-            <Style x:Name="myButtonStyle" x:Key="buttonStyle" TargetType="Button">
+            <Style x:Key="ButtonStyle" TargetType="Button">
+                <Setter Property="Background" Value="#4252e8"/>
+                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="FontFamily" Value="Constantia"/>
+                <Setter Property="FontSize" Value="16"/>
+            </Style>
+            <Style x:Key="LabelStyle" TargetType="Label">
                 <Setter Property="Background" Value="#4252e8"/>
                 <Setter Property="Foreground" Value="White"/>
                 <Setter Property="FontFamily" Value="Constantia"/>
@@ -40,36 +46,41 @@
         </Grid.RowDefinitions>
 
         <Image Source="/Resources/Images/sun.png" Grid.Row="0" Grid.Column="0" MaxHeight="100"/>
-        <Button Name="ConnectWithDeviceButton" Style="{StaticResource buttonStyle}"
+        <Button Name="ConnectWithDeviceButton" Style="{StaticResource ButtonStyle}" Margin="0,20,0,0"
                 Content="Connect with Device" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2"
                 MaxHeight="40" MaxWidth="200" Command="{Binding ConnectWithDeviceCommand}" />
         
-        <Grid x:Name="DeviceList" Margin="30, 30, 30, 70" Grid.Row="0" Grid.Column="1">
-
-
-            <Grid x:Name="BluetoothListGrid" Opacity="1">
-                <ListView ItemsSource="{Binding Bluetooths}" SelectedItem="{Binding SelectedBluetooth}" >
+        <StackPanel Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" Margin="20, 30, 30, 40">
+            <Label Content="Found Devices:" FontSize="16" FontWeight="SemiBold" FontFamily="Constantia"/>
+            <Grid x:Name="BluetoothListGrid" Opacity="1" Margin="0,0,0,30" Height="88">
+                <ListView ItemsSource="{Binding Bluetooths}" 
+                          SelectedItem="{Binding SelectedBluetooth}" >
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <WrapPanel>
-                                <TextBlock Text="{Binding DeviceName}" FontFamily="Courier"/>
+                                <TextBlock Text="{Binding DeviceName}" FontFamily="Courier" FontSize="14"/>
                             </WrapPanel>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
             </Grid>
-            <ProgressBar x:Name="LoadingIndicator" UseLayoutRounding="True" IsEnabled="True" 
-                         Width="100" Height="20" Visibility="{Binding ProgressBar}"
-                         Minimum="0" Maximum="100" IsIndeterminate="True"/>
-        </Grid>
-        <Button Name="RefreshButton" Grid.Row="0" Grid.Column="1" Width="40" Height="40"
-                Style="{StaticResource buttonStyle}"
-                VerticalAlignment="Bottom" Margin="0,0,0,20" Command="{Binding RefreshCommand}">
-       
-                <StackPanel>
-                    <Image MaxWidth="40" MaxHeight="40" Source="/Resources/Images/refresh.jpg" />   
+            <Button Name="RefreshButton" Width="100" Height="40" Style="{StaticResource ButtonStyle}"
+                VerticalAlignment="Bottom" Margin="0,10,0,20" Command="{Binding RefreshCommand}">
+                <StackPanel Orientation="Horizontal">
+                    <Label Content="Refresh" VerticalAlignment="Center" Style="{StaticResource LabelStyle}" />
+                    <Image MaxWidth="40" MaxHeight="40" Source="/Resources/Images/refresh.jpg" />
                 </StackPanel>
+            </Button>
+        </StackPanel>
 
-        </Button>
+        <StackPanel Grid.RowSpan="2" Grid.ColumnSpan="2" Background="LightGray"
+                    Opacity="0.5" Visibility="{Binding ProgressBar}"/>
+        
+        <StackPanel Grid.RowSpan="2" Grid.ColumnSpan="2" Visibility="{Binding ProgressBar}"
+                    HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,40">
+            <Label Content="Searching for Devices" FontSize="20" FontFamily="Constantia"/>
+            <ProgressBar x:Name="LoadingIndicator" UseLayoutRounding="True" IsEnabled="True" 
+                         Width="200" Height="40" Minimum="0" Maximum="100" IsIndeterminate="True"/>
+        </StackPanel>
     </Grid>
 </Window>
