@@ -7,6 +7,8 @@ using System.IO.Ports;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
@@ -138,7 +140,7 @@ namespace InteligentDimmer.ViewModel
             set
             {
                 _response = value;
-                MessageBox.Show("Success!");
+              //  MessageBox.Show("Success!");
             }
         }
 
@@ -210,7 +212,16 @@ namespace InteligentDimmer.ViewModel
                     _sliderValue = value;
                 }
 
-                PowerToSet = SliderValue;
+                // TODO check !
+                Task.Run(() =>
+                {
+                    Task.WaitAll(Task.Delay(200));
+                    if (SliderValue == value)
+                    {
+                        PowerToSet = SliderValue;
+                    }
+                });
+
                 RaisePropertyChanged(nameof(SliderValue));
             }
         }
@@ -318,6 +329,8 @@ namespace InteligentDimmer.ViewModel
 
         private void SetTime(object obj)
         {
+            // PrepareData();
+            // SendData();
             // if responose == 0xAA
             if (true)
             {
@@ -348,6 +361,8 @@ namespace InteligentDimmer.ViewModel
 
         private int PowerOn()
         {
+            // PrepareData();
+            // SendData();
             // if responose == 0xAA
             if (true)
             {
@@ -360,6 +375,8 @@ namespace InteligentDimmer.ViewModel
 
         public int PowerOff()
         {
+            // PrepareData();
+            // SendData();
             // if responose == 0xAA
             if (true)
             {
@@ -391,6 +408,7 @@ namespace InteligentDimmer.ViewModel
 
         private void SendData()
         {
+            Response = null;
             //Stream.Write(new byte[]
             //{
             //    ControlData.FirstByte,
