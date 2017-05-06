@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using InteligentDimmer.Configuration;
 
 namespace InteligentDimmer.View
 {
@@ -6,10 +7,10 @@ namespace InteligentDimmer.View
     { 
         public ConnectionView()
         {
-            //     this.background = new ImageBrush(new BitmapImage(new Uri(@"./Resources/Images/background.png", UriKind.Relative)));// window.Background;
             InitializeComponent();
+
+            ConnectWithDeviceButton.Content = Constants.ConnectWithDevice;
+            SearchingForDevices.Content = Constants.SearchingForDevices;
         }
     }
-
-   
 }

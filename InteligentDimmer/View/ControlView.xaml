@@ -54,12 +54,21 @@
                     </Trigger>
                 </Style.Triggers>
             </Style>
-            
-            <Style x:Name="myBorderStyle" x:Key="BorderStyle" TargetType="Border">
+            <Style x:Key="BorderStyle" TargetType="Border">
                 <Setter Property="BorderThickness" Value="1"/>
                 <Setter Property="BorderBrush" Value="Black"/>
                 <Setter Property="CornerRadius" Value="5"/>
                 <Setter Property="Padding" Value="1"/>
+            </Style>
+            <Style x:Key="LabelStyle" TargetType="Label">
+                <Setter Property="Height" Value="40"/>
+                <Setter Property="FontFamily" Value="Constantia"/>
+                <Setter Property="FontSize" Value="16"/>
+            </Style>
+            
+            <Style x:Key="InfoLabelStyle" TargetType="Label" BasedOn="{StaticResource LabelStyle}" >
+                <Setter Property="VerticalAlignment" Value="Top"/>
+                <Setter Property="Margin" Value="0,20,0,0"/>
             </Style>
         </ResourceDictionary>
     </Window.Resources>
@@ -79,17 +88,18 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <Image Name="SunImage" Source="{StaticResource Sun}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
-               Margin="50" Opacity="{Binding SliderValue, Converter={StaticResource SliderValueToSunOpacityConverter}}"/>
+        <Image Name="SunImage" Source="{StaticResource Sun}" Grid.ColumnSpan="2" Margin="50"
+               Opacity="{Binding SliderValue, Converter={StaticResource SliderValueToSunOpacityConverter}}"/>
         <Slider Name="PowerSlider" Grid.Row="0" Grid.RowSpan="3" Grid.Column="0" Grid.ColumnSpan="2" 
                 Orientation="Vertical" Margin="100,220,100,70" Ticks="0, 25, 50, 75, 100"
                 TickPlacement="BottomRight" Value="{Binding SliderValue}"
                 Maximum="100"/>
-        <Label Content="Current device: " Name="ChosenDeviceText" Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="1" 
-               Width="100" Height="30" VerticalAlignment="Top" Margin="0,20,0,0"/>
+        <Label x:Name="CurrentDeviceLabel" Grid.Column="2" Grid.Row="0" 
+               Style="{StaticResource InfoLabelStyle}"/>
+        <Label x:Name="CurrentDeviceColonLabel" Grid.Column="2" Grid.Row="0" Style="{StaticResource InfoLabelStyle}"/>
         <Label Content="{Binding SelectedBluetooth.DeviceName}" Name="ChosenDevice"
-               Grid.Column="3" Grid.Row="0" Width="120" Height="30" VerticalAlignment="Top"
-               Margin="0,20,0,0" HorizontalAlignment="Left"/>
+               Grid.Column="3" Grid.Row="0" Width="200" HorizontalAlignment="Left" 
+               Style="{StaticResource InfoLabelStyle}"/>
         <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,40,10,0" 
                     Orientation="Horizontal" HorizontalAlignment="Center">
             <Button Name="IncreasePowerButton" Content="+" Style="{StaticResource ButtonStyle}"
@@ -106,9 +116,10 @@
 
         <Label Content="{Binding CurrentTime}" Grid.Column="5" Grid.Row="2" Margin="0,0,5,5"
                VerticalAlignment="Bottom" HorizontalAlignment="Right" FontSize="16"/>
-
-        <StackPanel Grid.Column="3" Grid.ColumnSpan="3" Grid.Row="0" VerticalAlignment="Center"
-                    Margin="0, 60, 30, 0">
+        <Label x:Name="SetCurrencyLabel" Grid.Column="3" Grid.ColumnSpan="3"
+               HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,50" Style="{StaticResource LabelStyle}"/>
+        <StackPanel Grid.Column="3" Grid.ColumnSpan="3" Grid.Row="0" Grid.RowSpan="2"  VerticalAlignment="Center"
+                    Margin="0, 0, 30, 0">
 
             <Grid Height="100" Margin="0,0,0,20" >
                 <Border BorderBrush="Black" BorderThickness="1" CornerRadius="5">
@@ -128,7 +139,7 @@
                         <StackPanel Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Grid.ColumnSpan="2" Orientation="Horizontal" 
                                     Margin="0,0,0,30" HorizontalAlignment="Center" VerticalAlignment="Center" >
                             
-                            <Label Content="From" FontSize="18"/>
+                            <Label x:Name="FromLabel" FontSize="18"/>
                             <Border Style="{StaticResource BorderStyle}">
                                 <TextBox x:Name="FromHours" Style="{StaticResource TextBoxStyle}" 
                                          Background="{Binding ValidationColor, Converter={StaticResource DefaultBackgroundConverter}}">
@@ -141,7 +152,7 @@
                                     </TextBox.Text>
                                 </TextBox>
                             </Border>
-                            <Label Content=":" FontSize="18"/>
+                            <Label x:Name="FromColonLabel" FontSize="18"/>
                             <Border Style="{StaticResource BorderStyle}">
                                 <TextBox x:Name="FromMinutes" Style="{StaticResource TextBoxStyle}"
                                           Background="{Binding ValidationColor, Converter={StaticResource DefaultBackgroundConverter}}">
@@ -154,7 +165,7 @@
                                     </TextBox.Text>
                                 </TextBox>
                             </Border>
-                            <Label Content="To" FontSize="18"/>
+                            <Label x:Name="ToLabel" FontSize="18"/>
                             <Border Style="{StaticResource BorderStyle}">
                                 <TextBox x:Name="ToHours" Style="{StaticResource TextBoxStyle}">
                                     <TextBox.Text>
@@ -167,7 +178,7 @@
                                 </TextBox>
                             </Border>
                          
-                            <Label Content=":" FontSize="18"/>
+                            <Label x:Name="ToColonLabel" FontSize="18"/>
                             <Border Style="{StaticResource BorderStyle}">
                                 <TextBox x:Name="ToMinutes" Style="{StaticResource TextBoxStyle}">
                                     <TextBox.Text>
@@ -181,12 +192,13 @@
                             </Border>
                         </StackPanel>
                         <StackPanel Grid.Row="1" Margin="0,12,0,0" HorizontalAlignment="Center">
-                            <Button Content="Now" Margin="70,0,0,0" Width="50"
+                            <Button x:Name="NowButton" Margin="70,0,0,0" Width="50"
                                     Style="{StaticResource ButtonStyle}" Command="{Binding GetCurrentTime}"/>
                         </StackPanel>
                         <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" 
                                     HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <Label Content="Power :" Margin="0,0,10,0" FontSize="16" VerticalAlignment="Center"/>
+                            <Label x:Name="PowerLabel" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Right" Padding="4,4,0,4"/>
+                            <Label x:Name="PowerColonLabel" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left"/>
                             <Border Style="{StaticResource BorderStyle}">
                                 <TextBox x:Name="PowerSetter" Width="60" Style="{StaticResource TextBoxStyle}"
                                      FontSize="16" MaxLength="4">
@@ -205,7 +217,7 @@
                 </Border>
             </Grid>
 
-            <Button Name="SetTimeButton" Content="Set Time" Style="{StaticResource ValidatorStyle}"
+            <Button x:Name="SetTimerButton" Style="{StaticResource ValidatorStyle}"
                     Width="80" Height="30" Command="{Binding SetTimeCommand}" />
 
         </StackPanel>
