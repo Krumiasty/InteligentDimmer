@@ -86,7 +86,7 @@
     <Compile Include="Converters\DefaultBackgroundConverter.cs" />
     <Compile Include="Model\ControlData.cs" />
     <Compile Include="Services\PrepareDataService.cs" />
-    <Compile Include="Utility\Constants.cs" />
+    <Compile Include="Configuration\Constants.cs" />
     <Compile Include="Converters\AddPercetSignToTheValueConverter.cs" />
     <Compile Include="Converters\SliderValueToSunOpacityConverter.cs" />
     <Compile Include="Extensions\ListExtensions.cs" />
@@ -192,7 +192,9 @@
   <ItemGroup>
     <Resource Include="Resources\Images\refresh.jpg" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Resources\Images\refresh_img.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
