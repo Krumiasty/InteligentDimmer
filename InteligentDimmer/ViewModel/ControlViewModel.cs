@@ -25,8 +25,7 @@ namespace InteligentDimmer.ViewModel
             set
             {
                 _powerToSet = value;
-                ControlData.ThirdByte = (byte)_powerToSet;
-                PrepareData();
+                PrepareData(0x01, (byte)_powerToSet);
                 SendData();
             }
         }
@@ -209,16 +208,7 @@ namespace InteligentDimmer.ViewModel
                     _sliderValue = value;
                 }
 
-                // TODO check !
-                Task.Run(() =>
-                {
-                    Task.WaitAll(Task.Delay(200));
-                    if (SliderValue == value)
-                    {
-                        PowerToSet = SliderValue;
-                    }
-                });
-
+                PowerToSet = SliderValue;
                 RaisePropertyChanged(nameof(SliderValue));
             }
         }
@@ -299,9 +289,10 @@ namespace InteligentDimmer.ViewModel
             BluetoothClient = ConnectionViewModel.BluetoothClient;
 
           //  Stream = BluetoothClient.GetStream();
-        //    SerialPort.DataReceived += OnDataReceived;
+         //   SerialPort.DataReceived += OnDataReceived;
 
             CurrentPowerStatus = PowerMode.Off;
+            Response = null;
         }
 
      
@@ -328,11 +319,11 @@ namespace InteligentDimmer.ViewModel
         {
             // PrepareData();
             // SendData();
-            // if responose == 0xAA
-            if (true)
-            {
-                MessageBox.Show("Action Success");
-            }
+            //// if responose == 0xAA
+            //if (true)
+            //{
+            //    MessageBox.Show("Action Success");
+            //}
         }
 
         private bool CanSetTime(object obj)
@@ -358,10 +349,9 @@ namespace InteligentDimmer.ViewModel
 
         private int PowerOn()
         {
-            // PrepareData();
-            // SendData();
-            // if responose == 0xAA
-            if (true)
+            PrepareData(0x00, 0x01);
+            SendData();
+            if (string.IsNullOrEmpty(Response))
             {
                 SliderValue = 100;
                 return 1;
@@ -372,10 +362,9 @@ namespace InteligentDimmer.ViewModel
 
         public int PowerOff()
         {
-            // PrepareData();
-            // SendData();
-            // if responose == 0xAA
-            if (true)
+            PrepareData(0x00, 0x00);
+            SendData();
+            if (string.IsNullOrEmpty(Response))
             {
                 SliderValue = 0;
                 return 1;
@@ -396,28 +385,10 @@ namespace InteligentDimmer.ViewModel
             }
         }
 
-        private void PrepareData()
-        {
-            //TODO
-            ControlData.ThirdByte = (byte)PowerToSet;
-            ControlData.FourthByte = 0;
-        }
-
-        private void SendData()
-        {
-            Response = null;
-            //Stream.Write(new byte[]
-            //{
-            //    ControlData.FirstByte,
-            //    ControlData.SecondByte,
-            //    ControlData.ThirdByte,
-            //    ControlData.FourthByte,
-            //    ControlData.FifthByte
-            //}, 0, 0);
-        }
 
         private void OnDataReceived(object sender, SerialDataReceivedEventArgs e)
         {
+            Response = null;
             SerialPort serialPort = sender as SerialPort;
             if (serialPort == null)
             {
@@ -431,6 +402,26 @@ namespace InteligentDimmer.ViewModel
                 Debug.WriteLine(receivedString);
             }
             Response = receivedString;
+        }
+
+
+        public void PrepareData(byte command, byte data)
+        {
+            ControlData.SeparatorByte = command;
+            ControlData.DataByte = data;
+        }
+
+        public void SendData()
+        {
+            Response = null;
+            //SerialPort.Write(new byte[]
+            // {
+            //    ControlData.StartByte,
+            //    ControlData.CommandByte,
+            //    ControlData.SeparatorByte,
+            //    ControlData.DataByte,
+            //    ControlData.EndByte
+            // }, 0, 5);
         }
     }
 }

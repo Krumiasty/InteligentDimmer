@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -20,7 +21,7 @@ namespace InteligentDimmer.ViewModel
 {
     public class ConnectionViewModel : INotifyPropertyChanged
     {
-        private SerialPort _serialPort;
+
         private ObservableCollection<Bluetooth> _bluetooths;
         private Bluetooth _selectedBluetooth;
         private Visibility _progressBar;
@@ -61,7 +62,13 @@ namespace InteligentDimmer.ViewModel
             }
         }
 
-        public SerialPort SerialPort { get; }
+        private SerialPort _serialPort;
+        public SerialPort SerialPort
+        {
+            get { return _serialPort; }
+            set { _serialPort = value; }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         public ConnectionViewModel()
@@ -72,13 +79,13 @@ namespace InteligentDimmer.ViewModel
 
         private void SetupSerialPort()
         {
-            string[] ports = SerialPort.GetPortNames();
+            string[] ports = System.IO.Ports.SerialPort.GetPortNames();
             foreach (var port in ports)
             {
-                _serialPort = new SerialPort(port, 9600, Parity.None, 8, StopBits.One);
+                SerialPort = new SerialPort(port, 9600, Parity.None, 8, StopBits.One);
                 try
                 {
-                    _serialPort.Open();
+                    SerialPort.Open();
                     MessageBoxResult result = MessageBox.Show("Success", "Press Yes", MessageBoxButton.YesNo, MessageBoxImage.Question);
                     if (result == MessageBoxResult.OK || result == MessageBoxResult.Yes)
                     {
@@ -87,9 +94,9 @@ namespace InteligentDimmer.ViewModel
                 }
                 catch
                 {
-                    if (_serialPort != null)
+                    if (SerialPort != null)
                     {
-                        _serialPort.Close();
+                        SerialPort.Close();
                     }
                 }
             }
@@ -144,44 +151,43 @@ namespace InteligentDimmer.ViewModel
 
         private void ConnectWithDevice(object obj)
         {
-
             #region testing
 
-            //SetupSerialPort();
+            SetupSerialPort();
 
-            //var macAddressString = SelectedBluetooth.GetMacAddress();
-            //var macAddress = BluetoothAddress.Parse(macAddressString);
-            //var device = new BluetoothDeviceInfo(macAddress);
-            //BluetoothClient = new BluetoothClient();
+            var macAddressString = SelectedBluetooth.GetMacAddress();
+            var macAddress = BluetoothAddress.Parse(macAddressString);
+            var device = new BluetoothDeviceInfo(macAddress);
+            BluetoothClient = new BluetoothClient();
 
-            //const string pin = "1111";
-            //var isPaired = BluetoothSecurity.PairRequest(macAddress, pin);
+            const string pin = "1234";
+            var isPaired = BluetoothSecurity.PairRequest(macAddress, pin);
 
-            //if (!isPaired)
-            //{
-            //    MessageBox.Show("Pairing failed");
-            //    return;
-            //}
+            if (!isPaired)
+            {
+                MessageBox.Show("Pairing failed");
+                return;
+            }
 
-            //if (!device.Authenticated)
-            //{
-            //    MessageBox.Show("Authentication failed");
-            //    SerialPort.Close();
-            //    return;
-            //}
+            if (!device.Authenticated)
+            {
+                //MessageBox.Show("Authentication failed");
+                SerialPort.Close();
+                return;
+            }
 
-            //foreach (var service in device.InstalledServices)
-            //{
-            //    try
-            //    {
-            //        BluetoothClient.Connect(macAddress, service);
-            //        break;
-            //    }
-            //    catch
-            //    {
+            foreach (var service in device.InstalledServices)
+            {
+                try
+                {
+                    BluetoothClient.Connect(macAddress, service);
+                    break;
+                }
+                catch (Exception e)
+                {
 
-            //    }
-            //}
+                }
+            }
 
             //if (!BluetoothClient.Connected)
             //{
@@ -189,32 +195,33 @@ namespace InteligentDimmer.ViewModel
             //    return;
             //}
 
-            //PrepareDataService.PrepareData(0xAA, 0xBB, 0xCC, 0xDD, 0xEE);
+            PrepareDataService.PrepareData(0x00, 0x00);
             //var stream = BluetoothClient.GetStream();
 
-            //stream.Write(new byte[]
-            //{
-            //    ControlData.FifthByte,
-            //    ControlData.SecondByte,
-            //    ControlData.ThirdByte,
-            //    ControlData.FourthByte,
-            //    ControlData.FifthByte
-            //}, 0, 0);
+            SerialPort.Write(new byte[]
+            {
+                ControlData.StartByte,
+                ControlData.CommandByte,
+                ControlData.SeparatorByte,
+                ControlData.DataByte,
+                ControlData.EndByte
+            }, 0, 5);
 
-            //_serialPort.DataReceived += OnDataReceived;
+            SerialPort.DataReceived += OnDataReceived;
 
-            //if (!Response.Contains(""))
-            //{
-            //    IsConnected = false;
-            //    return;
+            if (!string.IsNullOrEmpty(Response))
+            {
+                IsConnected = false;
+                return;
 
-            //}
+            }
             #endregion
 
             IsConnected = true;
             ControlView controlWindow = new ControlView();
             Application.Current.MainWindow.Close();
             controlWindow.Show();
+            SerialPort.DataReceived -= OnDataReceived;
         }
 
         private void OnDataReceived(object sender, SerialDataReceivedEventArgs e)
