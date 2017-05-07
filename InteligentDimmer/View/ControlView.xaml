@@ -102,12 +102,12 @@
                Style="{StaticResource InfoLabelStyle}"/>
         <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,40,10,0" 
                     Orientation="Horizontal" HorizontalAlignment="Center">
-            <Button Name="IncreasePowerButton" Content="+" Style="{StaticResource ButtonStyle}"
-                    Height="30" Width="30" Command="{Binding IncreaseCommand}" />
+            <Button Name="IncreasePowerButton" Content="-" Style="{StaticResource ButtonStyle}"
+                    Height="30" Width="30" Command="{Binding DecreaseCommand}" />
             <Label Name="DisplayPowerValueLabel" Content="{Binding SliderValue, Converter={StaticResource AddPercetSignToTheValue}}"
                    Foreground="White" Height="30" Width="50" BorderBrush="#4252e8" BorderThickness="1" HorizontalContentAlignment="Center"/>
-            <Button Name="DecresePowerButton" Content="-" Style="{StaticResource ButtonStyle}"
-                    Height="30" Width="30" Command="{Binding DecreaseCommand}"/>
+            <Button Name="DecresePowerButton" Content="+" Style="{StaticResource ButtonStyle}"
+                    Height="30" Width="30" Command="{Binding IncreaseCommand}"/>
         </StackPanel>
 
         <Button Name="MainPowerButton" Content="{Binding TurnModeText}" 

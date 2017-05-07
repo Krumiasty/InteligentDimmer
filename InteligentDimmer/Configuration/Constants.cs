@@ -3,7 +3,7 @@
     public static class Constants
     {
         public static string Colon = ":";
-        public static string ConnectWithDevice = "ConnectWithDevice";
+        public static string ConnectWithDevice = "Connect with Device";
         public static string CurrentDevice = "Current Device";
         public static string From = "From";
         public static string Now = "Now";
