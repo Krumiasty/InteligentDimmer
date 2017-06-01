@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using InteligentDimmer.Configuration;
 using InteligentDimmer.Model;
+using InteligentDimmer.Services;
 using InteligentDimmer.Utility;
 using InTheHand.Net.Sockets;
 
@@ -25,7 +26,7 @@ namespace InteligentDimmer.ViewModel
             set
             {
                 _powerToSet = value;
-                PrepareData(0x01, (byte)_powerToSet);
+                PrepareDataService.PrepareData(0x01, (byte)_powerToSet, 0x00);
                 SendData();
             }
         }
@@ -294,7 +295,6 @@ namespace InteligentDimmer.ViewModel
             CurrentPowerStatus = PowerMode.Off;
             Response = null;
         }
-
      
         private void StartTimer()
         {
@@ -349,7 +349,7 @@ namespace InteligentDimmer.ViewModel
 
         private int PowerOn()
         {
-            PrepareData(0x00, 0x01);
+            PrepareDataService.PrepareData(0x00, 0x01, 0x00);
             SendData();
             if (string.IsNullOrEmpty(Response))
             {
@@ -359,10 +359,9 @@ namespace InteligentDimmer.ViewModel
             return 0;
         }
 
-
         public int PowerOff()
         {
-            PrepareData(0x00, 0x00);
+            PrepareDataService.PrepareData(0x00, 0x00, 0x00);
             SendData();
             if (string.IsNullOrEmpty(Response))
             {
@@ -384,8 +383,6 @@ namespace InteligentDimmer.ViewModel
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
         }
-
-
         private void OnDataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             Response = null;
@@ -404,13 +401,6 @@ namespace InteligentDimmer.ViewModel
             Response = receivedString;
         }
 
-
-        public void PrepareData(byte command, byte data)
-        {
-            ControlData.SeparatorByte = command;
-            ControlData.DataByte = data;
-        }
-
         public void SendData()
         {
             Response = null;
@@ -418,10 +408,12 @@ namespace InteligentDimmer.ViewModel
             // {
             //    ControlData.StartByte,
             //    ControlData.CommandByte,
-            //    ControlData.SeparatorByte,
-            //    ControlData.DataByte,
+            //    ControlData.SeparatorByte1,
+            //    ControlData.DataByte1,
+            //    ControlData.SeparatorByte2,
+            //    ControlData.DataByte2,
             //    ControlData.EndByte
-            // }, 0, 5);
+            // }, 0, Constants.BytesNumber);
         }
     }
 }
