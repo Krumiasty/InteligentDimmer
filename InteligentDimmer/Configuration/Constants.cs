@@ -2,6 +2,7 @@
 {
     public static class Constants
     {
+        public static int BytesNumber = 7;
         public static string Colon = ":";
         public static string ConnectWithDevice = "Connect with Device";
         public static string CurrentDevice = "Current Device";

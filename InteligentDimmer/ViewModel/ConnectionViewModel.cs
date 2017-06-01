@@ -4,10 +4,12 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO.Ports;
+using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using InteligentDimmer.Configuration;
 using InteligentDimmer.Extensions;
 using InteligentDimmer.Model;
 using InteligentDimmer.Services;
@@ -15,6 +17,7 @@ using InteligentDimmer.Utility;
 using InteligentDimmer.View;
 using InTheHand.Net;
 using InTheHand.Net.Bluetooth;
+using InTheHand.Net.Bluetooth.Factory;
 using InTheHand.Net.Sockets;
 
 namespace InteligentDimmer.ViewModel
@@ -79,15 +82,19 @@ namespace InteligentDimmer.ViewModel
 
         private void SetupSerialPort()
         {
-            string[] ports = System.IO.Ports.SerialPort.GetPortNames();
+            var ports = SerialPort.GetPortNames();
             foreach (var port in ports)
             {
                 SerialPort = new SerialPort(port, 9600, Parity.None, 8, StopBits.One);
                 try
                 {
                     SerialPort.Open();
-                    MessageBoxResult result = MessageBox.Show("Success", "Press Yes", MessageBoxButton.YesNo, MessageBoxImage.Question);
-                    if (result == MessageBoxResult.OK || result == MessageBoxResult.Yes)
+                    MessageBoxResult result = MessageBox.Show("Success",
+                                                            "Press Yes", 
+                                                            MessageBoxButton.YesNo,
+                                                            MessageBoxImage.Question);
+                    if (result == MessageBoxResult.OK 
+                        || result == MessageBoxResult.Yes)
                     {
                         break;
                     }
@@ -105,14 +112,36 @@ namespace InteligentDimmer.ViewModel
         private async void FindBluetooths()
         {
             var devices = new List<Bluetooth>();
-            var bluetoothClientc = new BluetoothClient();
+            BluetoothClient bluetoothClient;
+            try
+            {
+                bluetoothClient = new BluetoothClient();
+
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("Please make sure your bluetooth is enabled!",
+                                "Bluetooth Error!", 
+                                MessageBoxButton.OK);
+                ProgressBar = Visibility.Hidden;
+                return;
+            }
 
             ProgressBar = Visibility.Visible;
             SelectedBluetooth = null;
-               await Task.Run(() =>
-            {
-                var foundDevices = bluetoothClientc.DiscoverDevices();
 
+            await Task.Run(async () =>
+            {
+                var foundDevices = bluetoothClient.DiscoverDevices();
+
+                await Task.Run(() =>
+                {
+                    Task.Delay(5000);
+                    bluetoothClient.EndDiscoverDevices(new Task(() =>
+                    {
+                        ProgressBar = Visibility.Hidden;
+                    }));
+                });
                 foreach (var foundDevice in foundDevices)
                 {
                     Bluetooth device = new Bluetooth(foundDevice);
@@ -195,17 +224,21 @@ namespace InteligentDimmer.ViewModel
             //    return;
             //}
 
-            PrepareDataService.PrepareData(0x00, 0x00);
+            PrepareDataService.PrepareData(0x00, 0x00, 0x00);
             //var stream = BluetoothClient.GetStream();
 
             SerialPort.Write(new byte[]
             {
                 ControlData.StartByte,
                 ControlData.CommandByte,
-                ControlData.SeparatorByte,
-                ControlData.DataByte,
+                ControlData.SeparatorByte1,
+                ControlData.DataByte1,
+                ControlData.SeparatorByte2,
+                ControlData.DataByte2,
                 ControlData.EndByte
-            }, 0, 5);
+            },
+            0, 
+            Constants.BytesNumber);
 
             SerialPort.DataReceived += OnDataReceived;
 
