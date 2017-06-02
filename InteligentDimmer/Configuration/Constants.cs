@@ -5,9 +5,11 @@
         public static int BytesNumber = 7;
         public static string Colon = ":";
         public static string ConnectWithDevice = "Connect with Device";
+        public static string ConnectingToTheDevice = "Connecting to the Device";
         public static string CurrentDevice = "Current Device";
         public static string From = "From";
         public static string Now = "Now";
+        public static string Pin = "1234";
         public static string Power = "Power";
         public static string SearchingForDevices = "Searching for Devices";
         public static string SetCurrencyIntensityTimer = "Set Currency Intensity Timer";
