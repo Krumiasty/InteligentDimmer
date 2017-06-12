@@ -217,92 +217,92 @@ namespace InteligentDimmer.ViewModel
 
             #region testing
 
-            var isSetupSucceed = await Task.Run<bool>(() =>
-            {
-                if (!SetupSerialPort())
-                {
-                    return false;
-                }
-
-                var macAddressString = SelectedBluetooth.GetMacAddress();
-                var macAddress = BluetoothAddress.Parse(macAddressString);
-                var device = new BluetoothDeviceInfo(macAddress);
-                BluetoothClient = new BluetoothClient();
-
-                var isPaired = BluetoothSecurity.PairRequest(macAddress, Constants.Pin);
-
-                if (!isPaired)
-                {
-                    MessageBox.Show("Pairing failed");
-                    return false;
-                }
-
-                if (!device.Authenticated)
-                {
-                    MessageBox.Show("Authentication failed");
-                    SerialPort.Close();
-                    return false;
-                }
-
-                foreach (var service in device.InstalledServices)
-                {
-                    try
-                    {
-                        BluetoothClient.Connect(macAddress, service);
-                        break;
-                    }
-                    catch (Exception e)
-                    {
-                        if (service == device.InstalledServices.Last())
-                        {
-                            return false;
-                        }
-                    }
-                }
-                return true;
-            }
-                );
-
-            if (!isSetupSucceed)
-            {
-                SetupProgressBarLayout(Visibility.Hidden, Constants.ConnectingToTheDevice);
-                return;
-            }
-
-            //if (!BluetoothClient.Connected)
+            //var isSetupSucceed = await Task.Run<bool>(() =>
             //{
-            //    MessageBox.Show("Connection failed");
+            //    if (!SetupSerialPort())
+            //    {
+            //        return false;
+            //    }
+
+            //    var macAddressString = SelectedBluetooth.GetMacAddress();
+            //    var macAddress = BluetoothAddress.Parse(macAddressString);
+            //    var device = new BluetoothDeviceInfo(macAddress);
+            //    BluetoothClient = new BluetoothClient();
+
+            //    var isPaired = BluetoothSecurity.PairRequest(macAddress, Constants.Pin);
+
+            //    if (!isPaired)
+            //    {
+            //        MessageBox.Show("Pairing failed");
+            //        return false;
+            //    }
+
+            //    if (!device.Authenticated)
+            //    {
+            //        MessageBox.Show("Authentication failed");
+            //        SerialPort.Close();
+            //        return false;
+            //    }
+
+            //    foreach (var service in device.InstalledServices)
+            //    {
+            //        try
+            //        {
+            //            BluetoothClient.Connect(macAddress, service);
+            //            break;
+            //        }
+            //        catch (Exception e)
+            //        {
+            //            if (service == device.InstalledServices.Last())
+            //            {
+            //                return false;
+            //            }
+            //        }
+            //    }
+            //    return true;
+            //}
+            //    );
+
+            //if (!isSetupSucceed)
+            //{
+            //    SetupProgressBarLayout(Visibility.Hidden, Constants.ConnectingToTheDevice);
             //    return;
             //}
 
-            PrepareDataService.PrepareData(0x00, 0x00, 0x00);
-            //var stream = BluetoothClient.GetStream();
+            ////if (!BluetoothClient.Connected)
+            ////{
+            ////    MessageBox.Show("Connection failed");
+            ////    return;
+            ////}
 
-            SerialPort.Write(new byte[]
-            {
-                ControlData.StartByte,
-                ControlData.CommandByte,
-                ControlData.SeparatorByte1,
-                ControlData.DataByte1,
-                ControlData.SeparatorByte2,
-                ControlData.DataByte2,
-                ControlData.EndByte
-            },
-            0,
-            Constants.BytesNumber);
+            //PrepareDataService.PrepareData(0x00, 0x00, 0x00);
+            ////var stream = BluetoothClient.GetStream();
 
-            SerialPort.DataReceived += OnDataReceived;
+            //SerialPort.Write(new byte[]
+            //{
+            //    ControlData.StartByte,
+            //    ControlData.CommandByte,
+            //    ControlData.SeparatorByte1,
+            //    ControlData.DataByte1,
+            //    ControlData.SeparatorByte2,
+            //    ControlData.DataByte2,
+            //    ControlData.EndByte
+            //},
+            //0,
+            //Constants.BytesNumber);
 
-            if (!string.IsNullOrEmpty(Response))
-            {
-                IsConnected = false;
-                return;
+            //SerialPort.DataReceived += OnDataReceived;
 
-            }
+            //if (!string.IsNullOrEmpty(Response))
+            //{
+            //    IsConnected = false;
+            //    return;
+
+            //}
             #endregion
 
             IsConnected = true;
-            SerialPort.DataReceived -= OnDataReceived;
+        //    SerialPort.DataReceived -= OnDataReceived;
             ControlView controlWindow = new ControlView();
             Application.Current.MainWindow.Close();
             controlWindow.Show();
