@@ -85,7 +85,10 @@
       <DependentUpon>RoundTextBox.xaml</DependentUpon>
     </Compile>
     <Compile Include="Converters\DefaultBackgroundConverter.cs" />
+    <Compile Include="Model\Command.cs" />
     <Compile Include="Model\ControlData.cs" />
+    <Compile Include="Model\DataForSetTimeStructure.cs" />
+    <Compile Include="Model\DataForTimeStampStructure.cs" />
     <Compile Include="Services\PrepareDataService.cs" />
     <Compile Include="Configuration\Constants.cs" />
     <Compile Include="Converters\AddPercetSignToTheValueConverter.cs" />
@@ -93,12 +96,11 @@
     <Compile Include="Extensions\ListExtensions.cs" />
     <Compile Include="Infrastructure\ObjectContainer.cs" />
     <Compile Include="Model\Bluetooth.cs" />
-    <Compile Include="MyDialog.xaml.cs">
-      <DependentUpon>MyDialog.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Resources\Styles\buttonStyle.xaml.cs">
       <DependentUpon>buttonStyle.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Services\SendDataService.cs" />
+    <Compile Include="Validators\DaysValidator.cs" />
     <Compile Include="Validators\HoursValidator.cs" />
     <Compile Include="Validators\MinutesValidator.cs" />
     <Compile Include="Validators\SetPowerValidator.cs" />
@@ -110,10 +112,6 @@
       <DependentUpon>ControlView.xaml</DependentUpon>
     </Compile>
     <Page Include="Controls\RoundTextBox.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="MyDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

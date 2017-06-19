@@ -122,7 +122,7 @@
         <StackPanel Grid.Column="3" Grid.ColumnSpan="3" Grid.Row="0" Grid.RowSpan="2"  VerticalAlignment="Center"
                     Margin="0, 0, 30, 0">
 
-            <Grid Height="100" Margin="0,0,0,20" >
+            <Grid Height="150" Margin="0,50,0,20" >
                 <Border BorderBrush="Black" BorderThickness="1" CornerRadius="5">
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -132,14 +132,15 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
-                        <StackPanel Background="White" Opacity="0.5" Grid.RowSpan="2" Grid.ColumnSpan="2" 
+                        <StackPanel Background="White" Opacity="0.5" Grid.RowSpan="3" Grid.ColumnSpan="2" 
                                     Orientation="Horizontal" >
                  
                         </StackPanel>
                         <StackPanel Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Grid.ColumnSpan="2" Orientation="Horizontal" 
                                     Margin="0,0,0,30" HorizontalAlignment="Center" VerticalAlignment="Center" >
-                            
+                      
                             <Label x:Name="FromLabel" FontSize="18"/>
                             <Border Style="{StaticResource BorderStyle}">
                                 <TextBox x:Name="FromHours" Style="{StaticResource TextBoxStyle}" 
@@ -157,7 +158,8 @@
                             <Label x:Name="FromColonLabel" FontSize="18"/>
                             <Border Style="{StaticResource BorderStyle}">
                                 <TextBox x:Name="FromMinutes" Style="{StaticResource TextBoxStyle}"
-                                          Background="{Binding ValidationColor, Converter={StaticResource DefaultBackgroundConverter}}">
+                                          Background="{Binding ValidationColor, Converter={StaticResource DefaultBackgroundConverter}}"
+                                          b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text">
                                     <TextBox.Text>
                                         <Binding Path="FromMinutes" Mode="TwoWay" >
                                             <Binding.ValidationRules>
@@ -169,7 +171,8 @@
                             </Border>
                             <Label x:Name="ToLabel" FontSize="18"/>
                             <Border Style="{StaticResource BorderStyle}">
-                                <TextBox x:Name="ToHours" Style="{StaticResource TextBoxStyle}">
+                                <TextBox x:Name="ToHours" Style="{StaticResource TextBoxStyle}"
+                                         b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text">
                                     <TextBox.Text>
                                         <Binding Path="ToHours" >
                                             <Binding.ValidationRules>
@@ -182,7 +185,8 @@
                          
                             <Label x:Name="ToColonLabel" FontSize="18"/>
                             <Border Style="{StaticResource BorderStyle}">
-                                <TextBox x:Name="ToMinutes" Style="{StaticResource TextBoxStyle}">
+                                <TextBox x:Name="ToMinutes" Style="{StaticResource TextBoxStyle}"
+                                         b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text">
                                     <TextBox.Text>
                                         <Binding Path="ToMinutes" >
                                             <Binding.ValidationRules>
@@ -193,6 +197,7 @@
                                 </TextBox>
                             </Border>
                         </StackPanel>
+                    
                         <StackPanel Grid.Row="1" Margin="0,12,0,0" HorizontalAlignment="Center">
                             <Button x:Name="NowButton" Margin="70,0,0,0" Width="50"
                                     Style="{StaticResource ButtonStyle}" Command="{Binding GetCurrentTime}"/>
@@ -203,7 +208,8 @@
                             <Label x:Name="PowerColonLabel" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left"/>
                             <Border Style="{StaticResource BorderStyle}">
                                 <TextBox x:Name="PowerSetter" Width="60" Style="{StaticResource TextBoxStyle}"
-                                     FontSize="16" MaxLength="4">
+                                     FontSize="16" MaxLength="4"
+                                         b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text">
                                 <TextBox.Text>
                                     <Binding Path="SetPower" Converter="{StaticResource AddPercetSignToTheValue}" >
                                         <Binding.ValidationRules>
@@ -214,13 +220,36 @@
                             </TextBox>
                             </Border>
                         </StackPanel>
-
+                        <StackPanel HorizontalAlignment="Center" Orientation="Horizontal"
+                                    Grid.Row="2" Grid.ColumnSpan="2"
+                                    VerticalAlignment="Center">
+                            <Label Content="Repeat?" Style="{StaticResource LabelStyle}" VerticalContentAlignment="Center"/>
+                            <CheckBox HorizontalAlignment="Center" VerticalAlignment="Center" IsChecked="{Binding ShouldRepeat}"
+                                      Margin="5,0">
+                                <CheckBox.LayoutTransform>
+                                    <ScaleTransform ScaleX="2" ScaleY="2" />
+                                </CheckBox.LayoutTransform>
+                            </CheckBox>
+                            <Label Content="Days:" Style="{StaticResource LabelStyle}" VerticalContentAlignment="Center"/>
+                            <Border Style="{StaticResource BorderStyle}" Height="30">
+                                <TextBox x:Name="DaysSetter" Style="{StaticResource TextBoxStyle}" IsEnabled="{Binding ShouldRepeat}" 
+                                         b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text">
+                                    <TextBox.Text>
+                                        <Binding Path="DaysSetter" >
+                                            <Binding.ValidationRules>
+                                                <validators:MinutesValidator/>
+                                            </Binding.ValidationRules>
+                                        </Binding>
+                                    </TextBox.Text>
+                                </TextBox>
+                            </Border>
+                        </StackPanel>
                     </Grid>
                 </Border>
             </Grid>
 
             <Button x:Name="SetTimerButton" Style="{StaticResource ValidatorStyle}"
-                    Width="80" Height="30" Command="{Binding SetTimeCommand}" />
+                    Width="100" Height="30" Command="{Binding SetTimeCommand}" />
 
         </StackPanel>
     </Grid>

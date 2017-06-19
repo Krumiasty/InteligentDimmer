@@ -12,7 +12,7 @@
         public static string Pin = "1234";
         public static string Power = "Power";
         public static string SearchingForDevices = "Searching for Devices";
-        public static string SetCurrencyIntensityTimer = "Set Currency Intensity Timer";
+        public static string SetCurrencyIntensityTimer = "Set Brightness Timer";
         public static string SetTimer = "Set Timer";
         public static string To = "To";
         public static string TurnOn = "Turn On";

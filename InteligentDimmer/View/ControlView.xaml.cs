@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using InteligentDimmer.Configuration;
 using InteligentDimmer.ViewModel;
+using System;
 
 namespace InteligentDimmer.View
 {
@@ -25,10 +26,11 @@ namespace InteligentDimmer.View
             ToLabel.Content = Constants.To;
         }
 
-        private void WindowClosing(object sender, System.ComponentModel.CancelEventArgs e)
+        protected override void OnClosed(EventArgs e)
         {
-            e.Cancel = true;
-            Application.Current.Shutdown();
+            base.OnClosed(e);
+            var ControlViewModel = ViewModelLocator.GetViewModel<ControlViewModel>();
+            ControlViewModel?.CloseSerialPort();
         }
     }
 }
