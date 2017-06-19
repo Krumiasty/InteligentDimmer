@@ -68,6 +68,28 @@ namespace InteligentDimmer.ViewModel
             }
         }
 
+        private string _daysSetter;
+
+        public string DaysSetter
+        {
+            get { return _daysSetter; }
+            set
+            {
+                _daysSetter = value;
+                int daysSetterInt;
+                if (!int.TryParse(value, out daysSetterInt))
+                {
+                    ValidationColor = new SolidColorBrush(Colors.Red);
+                    throw new ApplicationException("Wrong days number");
+                }
+                else
+                {
+                    RaisePropertyChanged(nameof(DaysSetter));
+                    ValidationColor = new SolidColorBrush(Colors.White);
+                }
+            }
+        }
+
         private string _fromHours;
         public string FromHours
         {
@@ -130,6 +152,17 @@ namespace InteligentDimmer.ViewModel
             };
         }
 
+        private bool _shouldRepeat;
+
+        public bool ShouldRepeat
+        {
+            get { return _shouldRepeat; }
+            set {
+                _shouldRepeat = value;
+                RaisePropertyChanged(nameof(ShouldRepeat));
+            }
+        }
+
         private string _response;
         public string Response
         {
@@ -137,7 +170,6 @@ namespace InteligentDimmer.ViewModel
             set
             {
                 _response = value;
-              //  MessageBox.Show("Success!");
             }
         }
 
@@ -290,7 +322,7 @@ namespace InteligentDimmer.ViewModel
             BluetoothClient = ConnectionViewModel.BluetoothClient;
 
           //  Stream = BluetoothClient.GetStream();
-         //   SerialPort.DataReceived += OnDataReceived;
+            SerialPort.DataReceived += OnDataReceived;
 
             CurrentPowerStatus = PowerMode.Off;
             Response = null;
@@ -317,6 +349,105 @@ namespace InteligentDimmer.ViewModel
 
         private void SetTime(object obj)
         {
+            var currentTime = DateTime.Now;
+
+            var startTimeHour = int.Parse(FromHours);
+            var startTimeMinute = int.Parse(FromMinutes);
+            var endTimeHour = int.Parse(ToHours);
+            var endTimeMinute = int.Parse(ToMinutes);
+
+            int days;
+            if (!int.TryParse(DaysSetter, out days))
+            {
+                days = 0;
+            }
+
+            var brightness = int.Parse(SetPower);
+
+            // ON
+            PrepareDataService.PrepareData((byte)Command.FirstTimeStamp,
+                                (byte)DataForTimeStampStructure.Minutes,
+                                (byte)startTimeMinute);
+            SendDataService.SendData(SerialPort);
+
+            PrepareDataService.PrepareData((byte)Command.FirstTimeStamp,
+                                (byte)DataForTimeStampStructure.Hours,
+                                (byte)startTimeHour);
+            SendDataService.SendData(SerialPort);
+
+            PrepareDataService.PrepareData((byte)Command.FirstTimeStamp,
+                                (byte)DataForTimeStampStructure.Days,
+                                (byte)currentTime.Day);
+            SendDataService.SendData(SerialPort);
+
+            PrepareDataService.PrepareData((byte)Command.FirstTimeStamp,
+                                (byte)DataForTimeStampStructure.Weekdays,
+                                (byte)currentTime.DayOfWeek);
+            SendDataService.SendData(SerialPort);
+
+            //brightness
+            PrepareDataService.PrepareData((byte)Command.FirstTimeStamp,
+                                (byte)DataForTimeStampStructure.Function,
+                                (byte)Command.SetPower);
+            SendDataService.SendData(SerialPort);
+
+            PrepareDataService.PrepareData((byte)Command.FirstTimeStamp,
+                (byte)DataForTimeStampStructure.FunctionValue,
+                (byte)brightness);
+            SendDataService.SendData(SerialPort);
+            ////
+            PrepareDataService.PrepareData((byte)Command.WriteStructureToDevice,
+                0x00,
+                0x00);
+            SendDataService.SendData(SerialPort);
+
+
+
+            // OFF
+            PrepareDataService.PrepareData((byte)Command.SecondTimeStamp,
+                                (byte)DataForTimeStampStructure.Minutes,
+                                (byte)endTimeMinute);
+            SendDataService.SendData(SerialPort);
+
+            PrepareDataService.PrepareData((byte)Command.SecondTimeStamp,
+                                (byte)DataForTimeStampStructure.Hours,
+                                (byte)endTimeHour);
+            SendDataService.SendData(SerialPort);
+
+            PrepareDataService.PrepareData((byte)Command.SecondTimeStamp,
+                                (byte)DataForTimeStampStructure.Days,
+                                (byte)currentTime.Day);
+            SendDataService.SendData(SerialPort);
+
+            PrepareDataService.PrepareData((byte)Command.SecondTimeStamp,
+                                (byte)DataForTimeStampStructure.Weekdays,
+                                (byte)currentTime.DayOfWeek);
+            SendDataService.SendData(SerialPort);
+
+            PrepareDataService.PrepareData((byte)Command.WriteStructureToDevice,
+                                0x00,
+                                0x00);
+
+            SendDataService.SendData(SerialPort);
+
+            if (days > 0)
+            {
+                PrepareDataService.PrepareData((byte)Command.SetAlarm,
+                                (byte)(days + 1),
+                                0x01);
+                SendDataService.SendData(SerialPort);
+            }
+            else
+            {
+                PrepareDataService.PrepareData((byte)Command.SetAlarm,
+                                0x01,
+                                0x01);
+                SendDataService.SendData(SerialPort);
+            }
+
+            MessageBox.Show("Action Success");
+
+
             // PrepareData();
             // SendData();
             //// if responose == 0xAA
@@ -330,7 +461,6 @@ namespace InteligentDimmer.ViewModel
         {
             return DataValidator();
         }
-
 
         private bool DataValidator()
         {
@@ -404,16 +534,21 @@ namespace InteligentDimmer.ViewModel
         public void SendData()
         {
             Response = null;
-            //SerialPort.Write(new byte[]
-            // {
-            //    ControlData.StartByte,
-            //    ControlData.CommandByte,
-            //    ControlData.SeparatorByte1,
-            //    ControlData.DataByte1,
-            //    ControlData.SeparatorByte2,
-            //    ControlData.DataByte2,
-            //    ControlData.EndByte
-            // }, 0, Constants.BytesNumber);
+            SerialPort.Write(new byte[]
+             {
+                ControlData.StartByte,
+                ControlData.CommandByte,
+                ControlData.SeparatorByte1,
+                ControlData.DataByte1,
+                ControlData.SeparatorByte2,
+                ControlData.DataByte2,
+                ControlData.EndByte
+             }, 0, Constants.BytesNumber);
+        }
+
+        public void CloseSerialPort()
+        {
+            SerialPort.Close();
         }
     }
 }

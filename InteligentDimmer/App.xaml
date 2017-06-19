@@ -1,11 +1,12 @@
 ﻿<Application x:Class="InteligentDimmer.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:InteligentDimmer.View"
+             xmlns:v="clr-namespace:InteligentDimmer.View"
              xmlns:vm="clr-namespace:InteligentDimmer.ViewModel"
              xmlns:converters="clr-namespace:InteligentDimmer.Converters"
              xmlns:controls="clr-namespace:InteligentDimmer.Controls"
              xmlns:validators="clr-namespace:InteligentDimmer.Validators"
+             xmlns:behaviours="clr-namespace:InteligentDimmer.Behaviours"
              StartupUri="View/ConnectionView.xaml">
     <Application.Resources>
         <vm:ViewModelLocator x:Key="ViewModelLocator"/>
@@ -15,5 +16,6 @@
         <controls:RoundTextBox x:Key="RoundTextBox"/>
         <validators:HoursValidator x:Key="HoursValidator"/>
         <validators:MinutesValidator x:Key="MinutesValidator"/>
+        <behaviours:InputBindingsManager x:Key="InputBindingManager"/>
     </Application.Resources>
 </Application>

@@ -10,7 +10,6 @@ namespace InteligentDimmer.View
             InitializeComponent();
 
             ConnectWithDeviceButton.Content = Constants.ConnectWithDevice;
-            SearchingForDevices.Content = Constants.SearchingForDevices;
         }
     }
 }

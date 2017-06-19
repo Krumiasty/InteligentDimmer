@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO.Ports;
-using System.Runtime.Remoting.Messaging;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -17,7 +17,6 @@ using InteligentDimmer.Utility;
 using InteligentDimmer.View;
 using InTheHand.Net;
 using InTheHand.Net.Bluetooth;
-using InTheHand.Net.Bluetooth.Factory;
 using InTheHand.Net.Sockets;
 
 namespace InteligentDimmer.ViewModel
@@ -35,6 +34,18 @@ namespace InteligentDimmer.ViewModel
 
         public ICommand ConnectWithDeviceCommand { get; set; }
         public ICommand RefreshCommand { get; set; }
+
+        private string _progressBarText;
+
+        public string ProgressBarText
+        {
+            get { return _progressBarText; }
+            set
+            {
+                _progressBarText = value;
+                RaisePropertyChanged("ProgressBarText");
+            }
+        }
 
         public Visibility ProgressBar
         {
@@ -77,10 +88,11 @@ namespace InteligentDimmer.ViewModel
         public ConnectionViewModel()
         {
             LoadCommands();
+            //   SetupSerialPort();
             FindBluetooths();
         }
 
-        private void SetupSerialPort()
+        private bool SetupSerialPort()
         {
             var ports = SerialPort.GetPortNames();
             foreach (var port in ports)
@@ -89,28 +101,49 @@ namespace InteligentDimmer.ViewModel
                 try
                 {
                     SerialPort.Open();
-                    MessageBoxResult result = MessageBox.Show("Success",
-                                                            "Press Yes", 
-                                                            MessageBoxButton.YesNo,
-                                                            MessageBoxImage.Question);
-                    if (result == MessageBoxResult.OK 
-                        || result == MessageBoxResult.Yes)
+                    MessageBoxResult result = MessageBox.Show("Success!",
+                                                            "SerialPort Setup",
+                                                            MessageBoxButton.OK);
+                    if (result == MessageBoxResult.OK)
                     {
-                        break;
+                        return true;
                     }
                 }
-                catch
+                catch (Exception e)
                 {
-                    if (SerialPort != null)
+                    if (port == ports.Last())
                     {
-                        SerialPort.Close();
+                        var answer = MessageBox.Show("Make sure you have proper drivers installed",
+                                            "Port opening failed",
+                                            MessageBoxButton.OK);
+
+                        if (answer == MessageBoxResult.OK)
+                        {
+                            if (SerialPort != null)
+                            {
+                                if (SerialPort.IsOpen)
+                                {
+                                    SerialPort.Close();
+                                }
+                                return false;
+                            }
+                        }
                     }
                 }
             }
+            return false;
+        }
+
+        private void SetupProgressBarLayout(Visibility visibility, string text)
+        {
+            ProgressBar = visibility;
+            ProgressBarText = text;
         }
 
         private async void FindBluetooths()
         {
+            SetupProgressBarLayout(Visibility.Visible, Constants.SearchingForDevices);
+
             var devices = new List<Bluetooth>();
             BluetoothClient bluetoothClient;
             try
@@ -121,27 +154,21 @@ namespace InteligentDimmer.ViewModel
             catch (Exception e)
             {
                 MessageBox.Show("Please make sure your bluetooth is enabled!",
-                                "Bluetooth Error!", 
+                                "Bluetooth Error!",
                                 MessageBoxButton.OK);
-                ProgressBar = Visibility.Hidden;
+                SetupProgressBarLayout(Visibility.Hidden, Constants.SearchingForDevices);
                 return;
             }
 
             ProgressBar = Visibility.Visible;
             SelectedBluetooth = null;
 
-            await Task.Run(async () =>
+            await Task.Run( () =>
             {
                 var foundDevices = bluetoothClient.DiscoverDevices();
 
-                await Task.Run(() =>
-                {
-                    Task.Delay(5000);
-                    bluetoothClient.EndDiscoverDevices(new Task(() =>
-                    {
-                        ProgressBar = Visibility.Hidden;
-                    }));
-                });
+                ProgressBar = Visibility.Hidden;
+
                 foreach (var foundDevice in foundDevices)
                 {
                     Bluetooth device = new Bluetooth(foundDevice);
@@ -159,14 +186,14 @@ namespace InteligentDimmer.ViewModel
                 Bluetooths.Add(item);
             }
 
-            ProgressBar = Visibility.Hidden;
+            SetupProgressBarLayout(Visibility.Hidden, Constants.SearchingForDevices);
         }
 
         private void LoadCommands()
         {
             ConnectWithDeviceCommand = new CustomCommand(ConnectWithDevice, CanConnect);
             RefreshCommand = new CustomCommand(Refresh, CanRefresh);
-        } 
+        }
 
         private void Refresh(object obj)
         {
@@ -178,83 +205,142 @@ namespace InteligentDimmer.ViewModel
             return true;
         }
 
-        private void ConnectWithDevice(object obj)
+        private async void ConnectWithDevice(object obj)
         {
-            #region testing
+            SetupProgressBarLayout(Visibility.Visible, Constants.ConnectingToTheDevice);
 
-            SetupSerialPort();
-
-            var macAddressString = SelectedBluetooth.GetMacAddress();
-            var macAddress = BluetoothAddress.Parse(macAddressString);
-            var device = new BluetoothDeviceInfo(macAddress);
-            BluetoothClient = new BluetoothClient();
-
-            const string pin = "1234";
-            var isPaired = BluetoothSecurity.PairRequest(macAddress, pin);
-
-            if (!isPaired)
+            var isSetupSucceed = await Task.Run<bool>( ()  =>
             {
-                MessageBox.Show("Pairing failed");
+                if (!SetupSerialPort())
+                {
+               
+                    return false;
+                }
+
+                var macAddressString = SelectedBluetooth.GetMacAddress();
+                var macAddress = BluetoothAddress.Parse(macAddressString);
+                var device = new BluetoothDeviceInfo(macAddress);
+                BluetoothClient = new BluetoothClient();
+
+                var isPaired = BluetoothSecurity.PairRequest(macAddress, Constants.Pin);
+            
+                if (!isPaired)
+                {
+                    MessageBox.Show("Pairing failed");
+                    return false;
+                }
+
+                //foreach (var service in device.InstalledServices)
+                //{
+                //    try
+                //    {
+                //        //BluetoothClient.Connect(macAddress, service);
+                //        BluetoothClient.BeginConnect(macAddress, BluetoothService.SerialPort,
+                //                    new AsyncCallback(BCCCallback), BluetoothClient);
+                //        break;
+                //    }
+                //    catch (Exception e)
+                //    {
+                //        if (service == device.InstalledServices.Last())
+                //        {
+                //            return false;
+                //        }
+                //    }
+                //}
+                
+                if (!device.Authenticated)
+                {
+                    MessageBox.Show("Authentication failed");
+                    SerialPort.Close();
+                    return false;
+                }
+
+                return true;
+            });
+
+            if (!isSetupSucceed)
+            {
+                SetupProgressBarLayout(Visibility.Hidden, Constants.ConnectingToTheDevice);
+
                 return;
             }
 
-            if (!device.Authenticated)
+            SerialPort.DataReceived += OnDataReceived;
+
+            try
             {
-                //MessageBox.Show("Authentication failed");
+                SynchronizeTimeOnDevice();
+            }
+            catch (Exception e)
+            {
+                SetupProgressBarLayout(Visibility.Hidden, Constants.ConnectingToTheDevice);
+            }
+
+            if (!string.IsNullOrEmpty(Response))
+            {
+                MessageBox.Show("Error");
                 SerialPort.Close();
                 return;
             }
 
-            foreach (var service in device.InstalledServices)
-            {
-                try
-                {
-                    BluetoothClient.Connect(macAddress, service);
-                    break;
-                }
-                catch (Exception e)
-                {
-
-                }
-            }
-
-            //if (!BluetoothClient.Connected)
-            //{
-            //    MessageBox.Show("Connection failed");
-            //    return;
-            //}
-
-            PrepareDataService.PrepareData(0x00, 0x00, 0x00);
-            //var stream = BluetoothClient.GetStream();
-
-            SerialPort.Write(new byte[]
-            {
-                ControlData.StartByte,
-                ControlData.CommandByte,
-                ControlData.SeparatorByte1,
-                ControlData.DataByte1,
-                ControlData.SeparatorByte2,
-                ControlData.DataByte2,
-                ControlData.EndByte
-            },
-            0, 
-            Constants.BytesNumber);
-
-            SerialPort.DataReceived += OnDataReceived;
-
-            if (!string.IsNullOrEmpty(Response))
-            {
-                IsConnected = false;
-                return;
-
-            }
-            #endregion
-
-            IsConnected = true;
+            SerialPort.DataReceived -= OnDataReceived;
             ControlView controlWindow = new ControlView();
             Application.Current.MainWindow.Close();
             controlWindow.Show();
-            SerialPort.DataReceived -= OnDataReceived;
+        }
+
+        private void SynchronizeTimeOnDevice()
+        {
+            var currentTime = DateTime.Now;
+
+            PrepareDataService.PrepareData(
+                                (byte)Command.SetStructureTime,
+                                (byte)DataForSetTimeStructure.Minutes,
+                                (byte)currentTime.Minute);
+
+            SendDataService.SendData(SerialPort);
+
+            PrepareDataService.PrepareData(
+                                (byte)Command.SetStructureTime,
+                                (byte)DataForSetTimeStructure.Hours,
+                                (byte)currentTime.Hour);
+
+            SendDataService.SendData(SerialPort);
+
+            PrepareDataService.PrepareData(
+                                (byte)Command.SetStructureTime,
+                                (byte)DataForSetTimeStructure.Days,
+                                (byte)currentTime.Day);
+
+            SendDataService.SendData(SerialPort);
+
+            PrepareDataService.PrepareData(
+                                (byte)Command.SetStructureTime,
+                                (byte)DataForSetTimeStructure.Weekdays,
+                                (byte)currentTime.DayOfWeek);
+
+            SendDataService.SendData(SerialPort);
+
+            PrepareDataService.PrepareData(
+                                (byte)Command.SetStructureTime,
+                                (byte)DataForSetTimeStructure.Months,
+                                (byte)currentTime.Month);
+
+            SendDataService.SendData(SerialPort);
+
+            PrepareDataService.PrepareData(
+                                (byte)Command.SetStructureTime,
+                                (byte)DataForSetTimeStructure.Years,
+                                (byte)(currentTime.Year % 2000));
+
+            SendDataService.SendData(SerialPort);
+
+            PrepareDataService.PrepareData(
+                                (byte)Command.WriteStructureToDevice,
+                                0x00,
+                                0x00);
+
+            SendDataService.SendData(SerialPort);
         }
 
         private void OnDataReceived(object sender, SerialDataReceivedEventArgs e)
@@ -276,9 +362,10 @@ namespace InteligentDimmer.ViewModel
 
         private bool CanConnect(object obj)
         {
-               if (SelectedBluetooth != null && SelectedBluetooth.DeviceName != "No devices found")
-                   return true;
-               return false;
+            if (SelectedBluetooth != null
+             && SelectedBluetooth.DeviceName != "No devices found")
+                return true;
+            return false;
         }
 
         protected void RaisePropertyChanged(string propertyName)
@@ -288,6 +375,5 @@ namespace InteligentDimmer.ViewModel
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
         }
-
-    } 
+    }
 }
