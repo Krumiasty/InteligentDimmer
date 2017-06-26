@@ -282,7 +282,7 @@ namespace InteligentDimmer.ViewModel
                 SerialPort.Close();
                 return;
             }
-
+            IsConnected = true;
             SerialPort.DataReceived -= OnDataReceived;
             ControlView controlWindow = new ControlView();
             Application.Current.MainWindow.Close();
