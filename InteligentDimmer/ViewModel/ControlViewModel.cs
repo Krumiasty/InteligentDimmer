@@ -148,7 +148,7 @@ namespace InteligentDimmer.ViewModel
             return o =>
             {
                 FromHours = DateTime.Now.Hour.ToString();
-                FromMinutes = DateTime.Now.Minute.ToString();
+                FromMinutes = (DateTime.Now.Minute + 1).ToString();
             };
         }
 
